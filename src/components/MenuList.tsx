@@ -1,67 +1,92 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Checkbox from './Checkbox';
 import styles from '../style.module.less';
 import classNames from 'classnames';
 
-function eachChildList(childList) {
-  return childList.map((o) => {
-    const isAuth = o.level >= 3 - 1;
-    return (
-      <div key={o.id} className={styles.borderTop}>
-        <Checkbox className={styles.centerCol}>{o.name}</Checkbox>
-        {isAuth ? (
-          <div className={styles.authCol}>
-            {o.childList.map((o) => {
-              return <Checkbox key={o.id}>{o.name}</Checkbox>;
-            })}
-          </div>
-        ) : (
-          <div className={styles.lastCol}>{eachChildList(o.childList)}</div>
-        )}
-      </div>
-    );
-  });
-}
+const ExpandColDeep = (props) => {
+  const {
+    data,
+    list,
+    firstCenterCol,
+    expand: userExpand,
+    setExpand: setParentExpand,
+  } = props;
+  const isAuth = data && data.level >= 3 - 1;
+  const [expand, setExpand] = useState<boolean>(false);
+  const minColStyle = useMemo(
+    () => ({
+      [styles.minCol]: data && !expand,
+    }),
+    [expand, data],
+  );
+
+  useEffect(() => {
+    if (data == null) return;
+    // 父元素关闭, 子元素递归关闭
+    if (userExpand === false) {
+      setExpand(false);
+    }
+  }, [userExpand, data]);
+
+  useEffect(() => {
+    if (expand) {
+      // 子元素展开, 父元素递归展开
+      setParentExpand && setParentExpand(true);
+    }
+  }, [expand]);
+
+  return (
+    <div
+      key={data?.id}
+      className={classNames(styles.borderTop, data?.className, minColStyle)}
+    >
+      {data && (
+        <Checkbox
+          className={classNames(
+            data.level === 0 ? styles.firstCol : styles.centerCol,
+            {
+              [styles.firstCenterCol]: firstCenterCol,
+            },
+          )}
+          isLeaf={list.length <= 1}
+          expand={expand}
+          onExpand={setExpand}
+        >
+          {data.name}
+        </Checkbox>
+      )}
+      {isAuth ? (
+        <div className={classNames(styles.authCol, minColStyle)}>
+          {list.map((o) => {
+            return <Checkbox key={o.id}>{o.name}</Checkbox>;
+          })}
+        </div>
+      ) : (
+        <div className={classNames(styles.lastCol)}>
+          {list.map((o, index) => {
+            return (
+              <ExpandColDeep
+                key={o.id}
+                data={o}
+                list={o.childList}
+                firstCenterCol={index === 0}
+                expand={expand}
+                setExpand={setExpand}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Row = (props) => {
   const { data } = props;
 
   return (
     <div className={styles.row}>
-      <div className={styles.firstCol}>
-        <Checkbox>{data.name}</Checkbox>
-      </div>
-      <div className={styles.lastCol}>
-        {/* <div className={styles.borderTop}>
-          <Checkbox className={styles.centerCol}>222</Checkbox>
-          <div className={styles.lastCol}>
-            <div className={styles.borderTop}>
-              <Checkbox className={styles.centerCol}>1111</Checkbox>
-            </div>
-            <div className={styles.borderTop}>
-              <Checkbox className={styles.centerCol}>1111</Checkbox>
-              <div className={styles.authCol}>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-                <Checkbox>1111</Checkbox>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={styles.borderTop}>
-          <Checkbox>2222</Checkbox>
-        </div> */}
-        {eachChildList(data.childList)}
-      </div>
-      {/* <div className={styles.authCol}>
-        <Checkbox>1111</Checkbox>
-        <Checkbox>1111</Checkbox>
-        <Checkbox>1111</Checkbox>
-        <Checkbox>1111</Checkbox>
-      </div> */}
+      <ExpandColDeep data={null} list={[data]} />
     </div>
   );
 };
