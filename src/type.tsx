@@ -1,24 +1,33 @@
 import { ColumnsType, TableProps } from 'antd/es/table';
 import { DataNode as AntdDataNode } from 'antd/es/tree';
 
+export interface Column {
+  title?: string;
+}
+
 export interface PermissionTableProps {
   dataSource: any[];
-  columns?: Partial<ColumnsType>[];
+  columns?: Column[];
   loading?: boolean;
-  tableProps?: TableProps<Data>;
+  defaultSelectedKeys?: string[] | number[];
 }
+
+export type PermissionTableTitleProps = Required<
+  Pick<PermissionTableProps, 'columns'>
+>;
 
 export interface BodyProps {
   list: Data[];
 }
 
-export interface Data extends AntdDataNode {
+export interface Data {
   childList: Data[];
   id: number;
   pId: number;
   name: string;
   level: number;
   parent: Data;
+  className?: string;
 }
 
 export interface TreeWrapProps {
@@ -31,4 +40,21 @@ export interface TreeWrapType {
 
 export interface CenterNodeListProps {
   record: Data;
+}
+
+export interface MenuListProps {
+  columns: Column[];
+  list: Data[];
+}
+
+export interface RowProps {
+  data: Data;
+}
+
+export interface ExpandColDeepProps {
+  data: Data | null;
+  list: Data[];
+  firstCenterCol?: boolean;
+  expand?: boolean;
+  setExpand?: React.Dispatch<React.SetStateAction<boolean>>;
 }

@@ -1,15 +1,39 @@
 import classNames from 'classnames';
+import { PermissionTableTitleProps } from './type';
 import styles from './style.module.less';
 
-const PermissionTableTitle = () => {
+export const defaultColums = [
+  {
+    title: '一级菜单',
+  },
+  {
+    title: '二级菜单',
+  },
+  {
+    title: '模块权限',
+  },
+  {
+    title: '具体权限',
+  },
+];
+
+const PermissionTableTitle = (props: PermissionTableTitleProps) => {
+  const { columns } = props;
+
   return (
     <div className={styles.tableHeaderbox}>
-      <div className={styles.tableItem}>模块</div>
-      <div className={styles.tableItem}>菜单权限1</div>
-      <div className={styles.tableItem}>菜单权限2</div>
-      <div className={classNames(styles.tableItem, styles.flexAuto)}>
-        具体权限
-      </div>
+      {columns.map((o, index) => {
+        return (
+          <div
+            key={index}
+            className={classNames(styles.tableItem, {
+              [styles.flexAuto]: index === columns.length - 1,
+            })}
+          >
+            {o.title}
+          </div>
+        );
+      })}
     </div>
   );
 };

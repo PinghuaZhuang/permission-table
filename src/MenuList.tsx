@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import Checkbox from './Checkbox';
-import styles from '../style.module.less';
 import classNames from 'classnames';
+import { MenuListProps, RowProps, ExpandColDeepProps } from './type';
+import Checkbox from './components/Checkbox';
+import styles from './style.module.less';
 
-const ExpandColDeep = (props) => {
+const ExpandColDeep = (props: ExpandColDeepProps) => {
   const {
     data,
     list,
@@ -81,7 +82,7 @@ const ExpandColDeep = (props) => {
   );
 };
 
-const Row = (props) => {
+const Row = (props: RowProps) => {
   const { data } = props;
 
   return (
@@ -91,12 +92,16 @@ const Row = (props) => {
   );
 };
 
-const MenuList = (props) => {
-  const { list = [] } = props;
+const MenuList = (props: MenuListProps) => {
+  const { list = [], columns } = props;
 
-  return list.map((o) => {
-    return <Row key={o.id} data={o} />;
-  });
+  return (
+    <>
+      {list.map((o) => {
+        return <Row key={o.id} data={o} />;
+      })}
+    </>
+  );
 };
 
 export { Row };
