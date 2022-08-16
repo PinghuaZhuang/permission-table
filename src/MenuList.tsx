@@ -11,8 +11,9 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     firstCenterCol,
     expand: userExpand,
     setExpand: setParentExpand,
+    level,
   } = props;
-  const isAuth = data && data.level >= 3 - 1;
+  const isAuth = data && data.level >= level - 2;
   const [expand, setExpand] = useState<boolean>(false);
   const minColStyle = useMemo(
     () => ({
@@ -73,6 +74,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
                 firstCenterCol={index === 0}
                 expand={expand}
                 setExpand={setExpand}
+                level={level}
               />
             );
           })}
@@ -83,11 +85,11 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
 };
 
 const Row = (props: RowProps) => {
-  const { data } = props;
+  const { data, level } = props;
 
   return (
     <div className={styles.row}>
-      <ExpandColDeep data={null} list={[data]} />
+      <ExpandColDeep data={null} list={[data]} level={level} />
     </div>
   );
 };
@@ -98,7 +100,7 @@ const MenuList = (props: MenuListProps) => {
   return (
     <>
       {list.map((o) => {
-        return <Row key={o.id} data={o} />;
+        return <Row key={o.id} data={o} level={columns.length} />;
       })}
     </>
   );

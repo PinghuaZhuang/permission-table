@@ -49,10 +49,12 @@ export interface MenuListProps {
 
 export interface RowProps {
   data: Data;
+  level: number;
 }
 
 export interface ExpandColDeepProps {
   data: Data | null;
+  level: number;
   list: Data[];
   firstCenterCol?: boolean;
   expand?: boolean;
