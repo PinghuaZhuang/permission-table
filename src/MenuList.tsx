@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import classNames from 'classnames';
 import { MenuListProps, RowProps, ExpandColDeepProps } from './type';
 import Checkbox from './components/Checkbox';
+import Context from './Context';
 import styles from './style.module.less';
 
 const ExpandColDeep = (props: ExpandColDeepProps) => {
@@ -11,10 +12,16 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     firstCenterCol,
     expand: userExpand,
     setExpand: setParentExpand,
-    level,
+    setChecked: setParentChecked,
+    setIndeterminate: setParentIndeterminate,
   } = props;
-  const isAuth = data && data.level >= level - 2;
-  const [expand, setExpand] = useState<boolean>(false);
+  const { maxLevel } = useContext(Context);
+  const isAuth = data && data.level >= maxLevel - 2;
+  const [expand, setExpand] = useState<boolean>(data?.checked ?? false);
+  const [checked, setChecked] = useState<boolean>(data?.checked ?? false);
+  const [indeterminate, setIndeterminate] = useState<boolean>(
+    data?.indeterminate ?? false,
+  );
   const minColStyle = useMemo(
     () => ({
       [styles.minCol]: data && !expand,
@@ -37,6 +44,13 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     }
   }, [expand]);
 
+  useEffect(() => {
+    // 如果当前处于半选状态, 则父元素也是半选状态
+    if (indeterminate) {
+      setParentIndeterminate && setParentIndeterminate(true);
+    }
+  }, [indeterminate]);
+
   return (
     <div
       key={data?.id}
@@ -50,9 +64,15 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
               [styles.firstCenterCol]: firstCenterCol,
             },
           )}
+          data={data}
           isLeaf={list.length <= 1}
           expand={expand}
           onExpand={setExpand}
+          indeterminate={indeterminate}
+          checked={checked}
+          setChecked={setChecked}
+          setParentChecked={setParentChecked}
+          setParentIndeterminate={setParentIndeterminate}
         >
           {data.name}
         </Checkbox>
@@ -60,7 +80,12 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
       {isAuth ? (
         <div className={classNames(styles.authCol, minColStyle)}>
           {list.map((o) => {
-            return <Checkbox key={o.id}>{o.name}</Checkbox>;
+            return (
+              // TODO:
+              <Checkbox key={o.id} data={o} isLeaf setChecked={setChecked}>
+                {o.name}
+              </Checkbox>
+            );
           })}
         </div>
       ) : (
@@ -74,7 +99,8 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
                 firstCenterCol={index === 0}
                 expand={expand}
                 setExpand={setExpand}
-                level={level}
+                setIndeterminate={setIndeterminate}
+                setChecked={setChecked}
               />
             );
           })}
@@ -85,11 +111,11 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
 };
 
 const Row = (props: RowProps) => {
-  const { data, level } = props;
+  const { data } = props;
 
   return (
     <div className={styles.row}>
-      <ExpandColDeep data={null} list={[data]} level={level} />
+      <ExpandColDeep data={null} list={[data]} />
     </div>
   );
 };
@@ -100,7 +126,7 @@ const MenuList = (props: MenuListProps) => {
   return (
     <>
       {list.map((o) => {
-        return <Row key={o.id} data={o} level={columns.length} />;
+        return <Row key={o.id} data={o} maxLevel={columns.length} />;
       })}
     </>
   );

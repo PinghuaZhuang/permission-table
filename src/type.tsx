@@ -6,19 +6,18 @@ export interface Column {
 }
 
 export interface PermissionTableProps {
-  dataSource: any[];
+  dataSource: Data[];
   columns?: Column[];
   loading?: boolean;
   defaultSelectedKeys?: string[] | number[];
+  onChange?: (
+    selectedKeys: Required<PermissionTableProps['defaultSelectedKeys']>,
+  ) => void;
 }
 
 export type PermissionTableTitleProps = Required<
   Pick<PermissionTableProps, 'columns'>
 >;
-
-export interface BodyProps {
-  list: Data[];
-}
 
 export interface Data {
   childList: Data[];
@@ -27,36 +26,26 @@ export interface Data {
   name: string;
   level: number;
   parent: Data;
+  checked: boolean;
+  indeterminate: boolean;
   className?: string;
 }
-
-export interface TreeWrapProps {
-  children: React.ReactNode;
-}
-
-export interface TreeWrapType {
-  setShrink?: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export interface CenterNodeListProps {
-  record: Data;
-}
-
 export interface MenuListProps {
   columns: Column[];
   list: Data[];
+  onChange?: PermissionTableProps['onChange'];
 }
 
 export interface RowProps {
   data: Data;
-  level: number;
 }
 
 export interface ExpandColDeepProps {
   data: Data | null;
-  level: number;
   list: Data[];
   firstCenterCol?: boolean;
   expand?: boolean;
-  setExpand?: React.Dispatch<React.SetStateAction<boolean>>;
+  setExpand: React.Dispatch<React.SetStateAction<boolean>>;
+  setIndeterminate: React.Dispatch<React.SetStateAction<boolean>>;
+  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }
