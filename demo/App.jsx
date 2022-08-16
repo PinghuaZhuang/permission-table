@@ -4,11 +4,8 @@ import mockData from './mock';
 
 const App = () => {
   return (
-    <Modal visible title="Permission-Table Demo" footer={null} width="1000px">
-      <div>
-        demo
-        <PermissionTable dataSource={mockData} />
-      </div>
+    <Modal visible title="Permission-Table Demo" footer={null} width="1100px">
+      <PermissionTable dataSource={mockData} />
     </Modal>
   );
 };

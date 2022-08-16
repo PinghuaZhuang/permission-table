@@ -1,9 +1,11 @@
 import { useMemo, useCallback } from 'react';
-import { Form, Checkbox, Spin, Table } from 'antd';
+// import { Form, Checkbox, Spin, Table } from 'antd';
 import { PermissionTableProps, DataNode } from './type';
 import merge from 'lodash/merge';
 import { each } from '@/utils';
 import createColumns from './columns';
+import Title from './Title';
+import MenuList from './components/MenuList';
 import styles from './style.module.less';
 
 const PermissionTable = (props: PermissionTableProps) => {
@@ -40,14 +42,14 @@ const PermissionTable = (props: PermissionTableProps) => {
 
   return (
     <div className={styles.permissionContainer}>
-      <>
-        <Table
-          rowKey="id"
-          {...tableProps}
-          columns={columns}
-          dataSource={dataSource}
-        />
-      </>
+      <Title />
+      <MenuList list={dataSource} />
+      {/* <Table
+        rowKey="id"
+        {...tableProps}
+        columns={columns}
+        dataSource={dataSource}
+      /> */}
     </div>
   );
 };

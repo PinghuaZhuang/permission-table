@@ -1,17 +1,113 @@
-@row-height: 28px;
+@import (reference) url("./var.module.less");
 
 .permissionContainer {
-  :global {
-    .ant-tree {
-      background-color: transparent;
-    }
+  width: 100%;
+
+  >div {
+    width: 100%;
   }
 }
 
-.treeWrap {
-  overflow: hidden;
+.flexAuto {
+  flex: auto;
 }
 
-:export {
-  rowHeight: @row-height;
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tableHeaderbox {
+  .flex;
+
+  .tableItem {
+    color: #000000d9;
+    background-color: #f9f9f9;
+    height: 40px;
+    .centerCol;
+  }
+
+  .tableItem:nth-child(1) {
+    .firstCol;
+  }
+
+  .tableItem:last-child {
+    .authCol;
+  }
+}
+
+.tableItem {
+  .flex;
+
+  color: #000000d9;
+  background-color: #f9f9f9;
+  height: 40px;
+
+  &:last-of-type {
+    border-right: none;
+  }
+}
+
+.firstCol {
+  .flex-col;
+  width: @first-col;
+  border-right: @border;
+}
+
+.lastCol {
+  .flexAuto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.centerColWrap {
+  display: flex;
+  width: max-content;
+}
+
+.centerCol {
+  width: @center-col;
+  border-right: @border;
+}
+
+.authCol {
+  .flexAuto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 0;
+  border-right: none;
+
+  > div {
+    border-top: none !important;
+    flex: none;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  border-bottom: @border;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.borderTop {
+  &+.borderTop {
+    border-top: @border;
+  }
+
+  display: flex;
+  flex: 1;
 }
