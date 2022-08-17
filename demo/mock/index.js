@@ -22,4 +22,4 @@ function createList(pid, level = 0) {
   };
 }
 
-export default new Array(random(15)).fill(0).map(() => createList(0));
+export default new Array(random(5, 15)).fill(0).map(() => createList(0));
