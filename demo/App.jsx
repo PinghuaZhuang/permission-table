@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Modal, Divider } from 'antd';
+import { Modal, Divider, InputNumber } from 'antd';
 import PermissionTable from '../src';
-import mockData from './mock';
+import createMock from './mock';
+import { merge } from 'lodash';
 
-const defaultSelectedKeys = [
-  /* 2, 3, 39, 1900, 2008, 1856 */
-];
+const defaultSelectedKeys = new Array(2);
 
 function getDoms() {
   return document.querySelectorAll('.ant-checkbox-checked').length;
@@ -13,11 +12,20 @@ function getDoms() {
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-  const [selectKeys, setSelectKeys] = useState(defaultSelectedKeys);
+  const [selectKeys, setSelectKeys] = useState([]);
   const [selectDoms, setSelectDoms] = useState(getDoms());
+  const [columnsLength, setColumnsLength] = useState(
+    defaultSelectedKeys.length,
+  );
+  const [dataSource, setDataSource] = useState(createMock(columnsLength));
 
   const onChange = useCallback((keys) => {
     setSelectKeys(keys);
+  }, []);
+
+  const onColumnLengthChange = useCallback((len) => {
+    setColumnsLength(len);
+    setDataSource(createMock(len, len > 4 ? 2 : undefined));
   }, []);
 
   useEffect(() => {
@@ -32,37 +40,47 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
+    clearTimeout(onChange.timer);
+    onChange.timer = setTimeout(() => {
       setSelectDoms(getDoms());
     }, 300);
   }, [selectKeys]);
 
+  useEffect(() => {
+    console.log('dataSource', dataSource);
+  }, [dataSource]);
+
   return (
     <Modal visible title="Permission-Table Demo" footer={null} width="1100px">
-      <strong>SelectKeys:</strong> {selectKeys.join(', ')}
+      <strong>Coloumns Length:</strong>{' '}
+      <InputNumber
+        value={columnsLength}
+        min={2}
+        max={10}
+        onChange={onColumnLengthChange}
+      />
       <br />
-      <strong>SelectKeysLength:</strong> {selectKeys.length}
+      <strong>Select Keys:</strong> {selectKeys.join(', ')}
+      <br />
+      <strong>SelectKeys Length:</strong> {selectKeys.length}
       <br />
       <strong>Checked Doms(delay 300):</strong> {selectDoms}
       <Divider />
       <div
         style={{
-          maxHeight: `60vh`,
+          // maxHeight: `60vh`,
           overflow: 'auto',
         }}
       >
         <PermissionTable
-          dataSource={mockData}
+          dataSource={dataSource}
           onChange={onChange}
           defaultSelectedKeys={defaultSelectedKeys}
-          columns={[
+          columns={merge([], new Array(columnsLength), [
             {
               title: '我修改了一级菜单',
             },
-            undefined,
-            undefined,
-            undefined,
-          ]}
+          ])}
           loading={loading}
         />
       </div>

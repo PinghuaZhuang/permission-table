@@ -18,7 +18,13 @@ const PermissionTable = (props: PermissionTableProps) => {
   } = props;
 
   const columns = useMemo(() => {
-    const defaultColumsDup = merge([], defaultColums);
+    const defaultColumsDup = merge(
+      // @ts-ignore
+      Array.from({ length: userColumns?.length }).map(() => ({
+        title: 'default title',
+      })),
+      defaultColums,
+    );
     const colsTmp = userColumns
       ? defaultColumsDup.slice(0, userColumns.length)
       : defaultColumsDup;

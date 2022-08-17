@@ -2,6 +2,7 @@
 
 .permissionContainer {
   width: 100%;
+  overflow-y: auto;
 
   >div {
     width: 100%;
@@ -16,6 +17,7 @@
 
 .flexAuto {
   flex: auto;
+  min-width: @center-col;
 }
 
 .flex {
@@ -33,6 +35,8 @@
 .tableHeaderbox {
   .flex;
 
+  min-width: max-content;
+
   .tableItem {
     color: #000000d9;
     background-color: #f9f9f9;
@@ -47,6 +51,12 @@
   .tableItem:last-child {
     .authCol;
   }
+}
+
+.tableBody {
+  min-width: max-content;
+  max-height: 819px;
+  overflow-y: auto;
 }
 
 .tableItem {
@@ -65,6 +75,21 @@
   // .flex-col;
   width: @first-col;
   border-right: @border;
+  overflow: hidden;
+
+  :global {
+    .ant-checkbox-wrapper {
+      flex: 1;
+      width: 0;
+    }
+
+    .ant-checkbox-wrapper span:last-of-type {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
 }
 
 .lastCol {
@@ -84,6 +109,7 @@
 .centerCol {
   width: @center-col;
   border-right: @border;
+  overflow: hidden;
 
   :global {
     .ant-checkbox-wrapper {

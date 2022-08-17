@@ -71,7 +71,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     if (parentExpand === false) {
       setExpand(false);
     } else {
-      if (data.level > 1) {
+      if (data.level > 1 && data.level < 3) {
         // 二级菜单开始, 递归子元素展开
         setExpand(true);
       }
@@ -191,7 +191,7 @@ const MenuList = (props: MenuListProps) => {
   const { list = [], columns } = props;
 
   return (
-    <div className="tableBody">
+    <div className={classNames('tableBody', styles.tableBody)}>
       {list.map((o) => {
         return <Row key={o.id} data={o} />;
       })}

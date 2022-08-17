@@ -5,15 +5,15 @@ import { faker } from '@faker-js/faker';
 
 let uid = 0;
 
-function createList(pid, level = 0) {
+function createList(pid, level = 0, columnsLength = 3) {
   const nextLevel = level + 1;
   const id = uid++;
   const childrenList =
-    level >= 3
+    level >= columnsLength - 1
       ? []
-      : Array.from({ length: random(1, 5) }).map(() =>
-          createList(id, nextLevel),
-        );
+      : Array.from({
+          length: columnsLength > 4 ? random(0, 2) : random(1, 5),
+        }).map(() => createList(id, nextLevel, columnsLength));
   return {
     id,
     name: faker.name.firstName() + faker.name.lastName(),
@@ -22,4 +22,8 @@ function createList(pid, level = 0) {
   };
 }
 
-export default new Array(random(5, 15)).fill(0).map(() => createList(0));
+export default function (columnsLength, count) {
+  return new Array(count ?? random(5, 15))
+    .fill(0)
+    .map(() => createList(0, 0, columnsLength));
+}
