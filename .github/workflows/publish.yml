@@ -1,4 +1,4 @@
-name: Publish index-bar lib.
+name: Publish permission-table lib.
 
 on:
   push:
