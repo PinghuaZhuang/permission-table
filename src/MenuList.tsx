@@ -171,6 +171,22 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
               />
             );
           })}
+          {/* 空白单元格 */}
+          {data && list.length === 0 && (
+            <div className={classNames(styles.borderTop)}>
+              {Array.from({ length: maxLevel - data.level }).map((_, index) => {
+                return (
+                  <div
+                    className={classNames(
+                      index === maxLevel - data.level - 1
+                        ? styles.authCol
+                        : styles.centerCol,
+                    )}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

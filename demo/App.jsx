@@ -4,7 +4,7 @@ import PermissionTable from '../src';
 import createMock from './mock';
 import { merge } from 'lodash';
 
-const defaultSelectedKeys = new Array(2);
+const defaultSelectedKeys = new Array(4);
 
 function getDoms() {
   return document.querySelectorAll('.ant-checkbox-checked').length;
@@ -75,7 +75,7 @@ const App = () => {
         <PermissionTable
           dataSource={dataSource}
           onChange={onChange}
-          defaultSelectedKeys={defaultSelectedKeys}
+          defaultSelectedKeys={[7]}
           columns={merge([], new Array(columnsLength), [
             {
               title: '我修改了一级菜单',
