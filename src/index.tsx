@@ -17,12 +17,15 @@ const PermissionTable = (props: PermissionTableProps) => {
     onChange: userOnChange,
   } = props;
 
-  const columns = useMemo(
-    () => merge([], defaultColums, userColumns),
-    [userColumns],
-  );
+  const columns = useMemo(() => {
+    const defaultColumsDup = merge([], defaultColums);
+    const colsTmp = userColumns
+      ? defaultColumsDup.slice(0, userColumns.length)
+      : defaultColumsDup;
+    return merge([], colsTmp, userColumns);
+  }, [userColumns]);
 
-  const maxLevel = useMemo(() => columns.length, [columns]);
+  const maxLevel = useMemo(() => columns.length - 1, [columns]);
 
   // 添加 level 和 parent
   const dataSource = useMemo(() => {
@@ -32,35 +35,34 @@ const PermissionTable = (props: PermissionTableProps) => {
       map[cur] = true;
       return map;
     }, {});
-    console.log(defaultSelectedKeysMap, 'defaultSelectedKeysMap');
+
     each(dupDataSource, (data, parent, level) => {
       data.childList = data.childList || [];
       data.level = level as number;
       data.parent = parent as Data;
-      data.checked = defaultSelectedKeysMap[data.id];
-      // if (level === 0) {
-      //   // 一级菜单, 如果子元素超过一个, 则显示三角符号
-      //   data.isLeaf = data.childList.length <= 1;
-      // } else if (data.childList.length > 0) {
-      //   // 非首尾, 根据同级元素判断
-      //   const siblings = parent.childList;
-      //   data.isLeaf = siblings.length <= 1;
-      // }
+      // 父元素选中, 子元素全部选中
+      // 转换错误的 selectKeys
+      data.checked = parent?.checked || defaultSelectedKeysMap[data.id];
     });
-    console.log('dupDataSource', dupDataSource);
     return dupDataSource;
   }, [userDataSource]);
 
   const onChange = useCallback(() => {
     if (userOnChange == null) return;
-    const selectedKeys: PermissionTableProps['defaultSelectedKeys'] = [];
-    each(dataSource, (data) => {
-      if (data.checked) {
-        // @ts-ignore
-        selectedKeys.push(data.id);
-      }
-    });
-    userOnChange(selectedKeys);
+    // @ts-ignore
+    clearTimeout(onChange.timer);
+    // 触发父元素全选是有延迟的.
+    // @ts-ignore
+    onChange.timer = setTimeout(() => {
+      const selectedKeys: PermissionTableProps['defaultSelectedKeys'] = [];
+      each(dataSource, (data) => {
+        if (data.checked) {
+          // @ts-ignore
+          selectedKeys.push(data.id);
+        }
+      });
+      userOnChange(selectedKeys);
+    }, 1);
   }, [userOnChange, dataSource]);
 
   return (

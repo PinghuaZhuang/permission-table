@@ -12,7 +12,14 @@ const App = () => {
       <PermissionTable
         dataSource={mockData}
         onChange={onChange}
-        defaultSelectedKeys={[1900, 2008, 1856]}
+        // defaultSelectedKeys={[2, 3, 39, 1900, 2008, 1856]}
+        defaultSelectedKeys={[2]}
+        // columns={[
+        //   {
+        //     title: '1111'
+        //   },
+        //   undefined,
+        // ]}
       />
     </Modal>
   );

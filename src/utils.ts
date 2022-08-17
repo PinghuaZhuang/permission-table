@@ -15,9 +15,13 @@ export function each<T>(
   let level = parent == null ? 0 : (parentLevel as number) + 1;
   arr.forEach((data) => {
     const list = (data as any)[childrenField];
+    fn(data, parent, level);
     if (list) {
       each(list, fn, childrenField, data, level);
     }
-    fn(data, parent, level);
   });
+}
+
+export function invoke(fn?: (...reset: any[]) => void, ...rest: any[]) {
+  return fn && fn(...rest);
 }

@@ -10,18 +10,34 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     data,
     list,
     firstCenterCol,
+    parentChecked,
     expand: userExpand,
     setExpand: setParentExpand,
     setChecked: setParentChecked,
     setIndeterminate: setParentIndeterminate,
   } = props;
   const { maxLevel } = useContext(Context);
-  const isAuth = data && data.level >= maxLevel - 2;
+  const isAuth = data && data.level >= maxLevel - 1;
   const [expand, setExpand] = useState<boolean>(data?.checked ?? false);
-  const [checked, setChecked] = useState<boolean>(data?.checked ?? false);
-  const [indeterminate, setIndeterminate] = useState<boolean>(
+  const [checked, _setChecked] = useState<boolean>(data?.checked ?? false);
+  const [indeterminate, _setIndeterminate] = useState<boolean>(
     data?.indeterminate ?? false,
   );
+
+  const setChecked = useCallback((value: boolean) => {
+    data && (data.checked = value);
+    if (value) {
+      // 选中后, 就不是非半选状态了
+      setIndeterminate(false);
+    }
+    _setChecked(value);
+  }, []);
+
+  const setIndeterminate = useCallback((value: boolean) => {
+    data && (data.indeterminate = value);
+    _setIndeterminate(value);
+  }, []);
+
   const minColStyle = useMemo(
     () => ({
       [styles.minCol]: data && !expand,
@@ -51,6 +67,18 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     }
   }, [indeterminate]);
 
+  useEffect(() => {
+    if (
+      parentChecked == null ||
+      data?.parent == null ||
+      data.parent.indeterminate
+    ) {
+      return;
+    }
+    // 父元素状态改变之后, 子选项全部选中
+    setChecked(parentChecked);
+  }, [parentChecked, data]);
+
   return (
     <div
       key={data?.id}
@@ -71,6 +99,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
           indeterminate={indeterminate}
           checked={checked}
           setChecked={setChecked}
+          setIndeterminate={setIndeterminate}
           setParentChecked={setParentChecked}
           setParentIndeterminate={setParentIndeterminate}
         >
@@ -81,8 +110,14 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
         <div className={classNames(styles.authCol, minColStyle)}>
           {list.map((o) => {
             return (
-              // TODO:
-              <Checkbox key={o.id} data={o} isLeaf setChecked={setChecked}>
+              <Checkbox
+                key={o.id}
+                data={o}
+                isLeaf
+                parentChecked={checked}
+                setParentChecked={setChecked}
+                setParentIndeterminate={setIndeterminate}
+              >
                 {o.name}
               </Checkbox>
             );
@@ -98,6 +133,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
                 list={o.childList}
                 firstCenterCol={index === 0}
                 expand={expand}
+                parentChecked={checked}
                 setExpand={setExpand}
                 setIndeterminate={setIndeterminate}
                 setChecked={setChecked}
@@ -126,7 +162,7 @@ const MenuList = (props: MenuListProps) => {
   return (
     <>
       {list.map((o) => {
-        return <Row key={o.id} data={o} maxLevel={columns.length} />;
+        return <Row key={o.id} data={o} />;
       })}
     </>
   );

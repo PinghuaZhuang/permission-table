@@ -44,8 +44,9 @@ export interface ExpandColDeepProps {
   data: Data | null;
   list: Data[];
   firstCenterCol?: boolean;
+  parentChecked?: boolean;
   expand?: boolean;
-  setExpand: React.Dispatch<React.SetStateAction<boolean>>;
-  setIndeterminate: React.Dispatch<React.SetStateAction<boolean>>;
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  setExpand?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIndeterminate?: (value: boolean) => void;
+  setChecked?: (value: boolean) => void;
 }
