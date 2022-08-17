@@ -1,5 +1,5 @@
-import { useMemo, useState, useCallback } from 'react';
-// import { Form, Checkbox, Spin, Table } from 'antd';
+import { useMemo, useCallback } from 'react';
+import { Spin, Empty } from 'antd';
 import { PermissionTableProps, Data } from './type';
 import merge from 'lodash/merge';
 import { each } from './utils';
@@ -12,7 +12,7 @@ const PermissionTable = (props: PermissionTableProps) => {
   const {
     dataSource: userDataSource,
     columns: userColumns,
-    loading,
+    loading = false,
     defaultSelectedKeys = [],
     onChange: userOnChange,
   } = props;
@@ -68,8 +68,14 @@ const PermissionTable = (props: PermissionTableProps) => {
   return (
     <div className={styles.permissionContainer}>
       <Provider value={{ columns, onChange, maxLevel, dataSource }}>
-        <Title columns={columns} />
-        <MenuList columns={columns} list={dataSource} onChange={onChange} />
+        <Spin spinning={loading}>
+          <Title columns={columns} />
+          {loading ? (
+            <Empty description />
+          ) : (
+            <MenuList columns={columns} list={dataSource} onChange={onChange} />
+          )}
+        </Spin>
       </Provider>
     </div>
   );

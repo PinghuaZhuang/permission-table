@@ -20,7 +20,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
   } = props;
   const { maxLevel } = useContext(Context);
   const isAuth = data && data.level >= maxLevel - 1;
-  const [expand, setExpand] = useState<boolean>(data?.checked ?? false);
+  const [expand, setExpand] = useState<boolean>(data?.expand ?? false);
   const [checked, _setChecked] = useState<boolean>(data?.checked ?? false);
   const [indeterminate, _setIndeterminate] = useState<boolean>(
     data?.indeterminate ?? false,

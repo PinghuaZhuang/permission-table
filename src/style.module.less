@@ -6,6 +6,12 @@
   >div {
     width: 100%;
   }
+
+  :global {
+    .ant-empty {
+      padding: 36px;
+    }
+  }
 }
 
 .flexAuto {
@@ -86,10 +92,12 @@
   flex-wrap: wrap;
   width: 0;
   border-right: none;
+  overflow: hidden;
 
   > div {
     border-top: none !important;
     flex: none;
+    align-items: flex-start !important;
   }
 }
 
@@ -120,7 +128,11 @@
 }
 
 .minCol {
-  height: @row-height;
+  height: @row-height + 1px;
+
+  &:nth-child(1) {
+    height: @row-height;
+  }
 }
 
 :export {

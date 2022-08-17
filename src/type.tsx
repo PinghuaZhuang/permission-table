@@ -27,6 +27,7 @@ export interface Data {
   level: number;
   parent: Data;
   checked: boolean;
+  expand?: boolean;
   indeterminate: boolean;
   className?: string;
 }
