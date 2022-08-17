@@ -108,6 +108,7 @@ const EasyCheckbox = (
   }, [userExpand]);
 
   useEffect(() => {
+    if (checked == null) return;
     data && (data.checked = !!checked);
     // 计算父元素的状态
     calcParentStatus(data);

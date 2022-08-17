@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef, useState } from 'react';
 import { Spin, Empty } from 'antd';
 import { PermissionTableProps, Data } from './type';
 import merge from 'lodash/merge';
@@ -8,14 +8,19 @@ import Title, { defaultColums } from './Title';
 import MenuList from './MenuList';
 import styles from './style.module.less';
 
+let uid = 0;
+
 const PermissionTable = (props: PermissionTableProps) => {
   const {
+    value,
     dataSource: userDataSource,
     columns: userColumns,
     loading = false,
     defaultSelectedKeys = [],
     onChange: userOnChange,
   } = props;
+  const cacheRef = useRef<typeof value>([]);
+  const [key, setKey] = useState<number>(uid);
 
   const columns = useMemo(() => {
     const defaultColumsDup = merge(
@@ -37,10 +42,18 @@ const PermissionTable = (props: PermissionTableProps) => {
   const dataSource = useMemo(() => {
     const dupDataSource = merge([], userDataSource);
     // @ts-ignore
-    const defaultSelectedKeysMap = defaultSelectedKeys.reduce((map, cur) => {
-      map[cur] = true;
-      return map;
-    }, {});
+    const defaultSelectedKeysMap = (value ?? defaultSelectedKeys).reduce(
+      (map, cur) => {
+        map[cur] = true;
+        return map;
+      },
+      {},
+    );
+
+    if (value && value !== cacheRef.current) {
+      setKey(++uid);
+      console.log('update');
+    }
 
     each(dupDataSource, (data, parent, level) => {
       data.childList = data.childList || [];
@@ -49,9 +62,13 @@ const PermissionTable = (props: PermissionTableProps) => {
       // 父元素选中, 子元素全部选中
       // FIXED: 防止 selectKeys 数据错误引起死循环
       data.checked = parent?.checked || defaultSelectedKeysMap[data.id];
+      if (data.checked && parent && !parent.checked) {
+        parent.indeterminate = true;
+      }
     });
+    // console.log('dupDataSource', merge([], dupDataSource), defaultSelectedKeysMap);
     return dupDataSource;
-  }, [userDataSource]);
+  }, [userDataSource, value]);
 
   const onChange = useCallback(() => {
     if (userOnChange == null) return;
@@ -67,12 +84,13 @@ const PermissionTable = (props: PermissionTableProps) => {
           selectedKeys.push(data.id);
         }
       });
+      cacheRef.current = selectedKeys;
       userOnChange(selectedKeys);
     }, 1);
   }, [userOnChange, dataSource]);
 
   return (
-    <div className={styles.permissionContainer}>
+    <div key={key} className={styles.permissionContainer}>
       <Provider value={{ columns, onChange, maxLevel, dataSource }}>
         <Spin spinning={loading}>
           <Title columns={columns} />

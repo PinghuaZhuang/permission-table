@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Modal, Divider, InputNumber } from 'antd';
+import { Modal, Divider, InputNumber, Input } from 'antd';
 import PermissionTable from '../src';
 import createMock from './mock';
 import { merge } from 'lodash';
@@ -25,7 +25,15 @@ const App = () => {
 
   const onColumnLengthChange = useCallback((len) => {
     setColumnsLength(len);
-    setDataSource(createMock(len, len > 4 ? 2 : undefined));
+    setDataSource(createMock(len, len > 4 ? 10 : undefined));
+  }, []);
+
+  const onValueChange = useCallback((e) => {
+    const value = e.target.value
+      .split(/,\s*/)
+      .map((o) => Number.parseFloat(o))
+      .filter((o) => !Number.isNaN(o));
+    setSelectKeys(value);
   }, []);
 
   useEffect(() => {
@@ -60,6 +68,9 @@ const App = () => {
         onChange={onColumnLengthChange}
       />
       <br />
+      <strong>Change Value(example: 10,4,5):</strong>{' '}
+      <Input.TextArea onChange={onValueChange} />
+      <br />
       <strong>Select Keys:</strong> {selectKeys.join(', ')}
       <br />
       <strong>SelectKeys Length:</strong> {selectKeys.length}
@@ -73,9 +84,10 @@ const App = () => {
         }}
       >
         <PermissionTable
+          value={selectKeys}
           dataSource={dataSource}
           onChange={onChange}
-          defaultSelectedKeys={[7]}
+          defaultSelectedKeys={[4]}
           columns={merge([], new Array(columnsLength), [
             {
               title: '我修改了一级菜单',

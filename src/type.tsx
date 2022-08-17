@@ -6,6 +6,7 @@ export interface Column {
 }
 
 export interface PermissionTableProps {
+  value?: string[] | number[];
   dataSource: Data[];
   columns?: Column[];
   loading?: boolean;

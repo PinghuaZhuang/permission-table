@@ -7,7 +7,7 @@ let uid = 0;
 
 function createList(pid, level = 0, columnsLength = 3) {
   const nextLevel = level + 1;
-  const id = uid++;
+  const id = ++uid;
   const childrenList =
     level >= columnsLength - 1
       ? []
