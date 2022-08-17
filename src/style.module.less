@@ -84,6 +84,20 @@
 .centerCol {
   width: @center-col;
   border-right: @border;
+
+  :global {
+    .ant-checkbox-wrapper {
+      flex: 1;
+      width: 0;
+    }
+
+    .ant-checkbox-wrapper span:last-of-type {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
 }
 
 .authCol {
@@ -94,7 +108,7 @@
   border-right: none;
   overflow: hidden;
 
-  > div {
+  >div {
     border-top: none !important;
     flex: none;
     align-items: flex-start !important;

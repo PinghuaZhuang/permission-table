@@ -126,7 +126,10 @@ const EasyCheckbox = (
   }, [parentChecked]);
 
   return (
-    <div className={classNames(styles.checkboxContainer, className)}>
+    <div
+      className={classNames(styles.checkboxContainer, className)}
+      title={data.name}
+    >
       {showExpand && (
         <CaretRightOutlined
           className={classNames(
