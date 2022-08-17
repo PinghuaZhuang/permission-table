@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback, useContext, useMemo } from 'react';
 import { Checkbox } from 'antd';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/es/checkbox';
 import classNames from 'classnames';
@@ -18,6 +18,7 @@ const EasyCheckbox = (
      */
     isLeaf?: boolean;
     data: Data;
+    firstCenterCol?: boolean;
     parentChecked?: boolean;
     setChecked?: (value: boolean) => void;
     setParentIndeterminate?: (value: boolean) => void;
@@ -32,6 +33,7 @@ const EasyCheckbox = (
     isLeaf,
     data,
     checked,
+    firstCenterCol, // 是否是兄弟节点中的第一个
     indeterminate,
     parentChecked,
     setChecked,
@@ -44,6 +46,9 @@ const EasyCheckbox = (
   const [lasetChecked, _setLastChecked] = useState<boolean>(
     data.checked ?? false,
   );
+  const showExpand = useMemo(() => {
+    return !isLeaf || (firstCenterCol && data?.parent?.childList.length > 1);
+  }, [isLeaf, firstCenterCol]);
   const { onChange: userOnChange } = useContext(Context);
 
   const setLastChecked = useCallback((value: boolean) => {
@@ -61,18 +66,19 @@ const EasyCheckbox = (
       const selectKeysLength = parent.childList.filter((o) => o.checked).length;
       if (selectKeysLength === parent.childList.length) {
         // 全选
-        setParentChecked && setParentChecked(true);
-        setParentIndeterminate && setParentIndeterminate(false);
+        invoke(setParentChecked, true);
+        invoke(setParentIndeterminate, false);
       } else if (selectKeysLength > 0) {
         // 半选
-        setParentChecked && setParentChecked(false);
-        // invoke(setParentChecked, false);
-        setParentIndeterminate && setParentIndeterminate(true);
+        invoke(setParentChecked, false);
+        invoke(setParentIndeterminate, true);
       } else {
         // 全不选
-        setParentChecked && setParentChecked(false);
-        setParentIndeterminate &&
-          setParentIndeterminate(parent.childList.some((o) => o.indeterminate));
+        invoke(setParentChecked, false);
+        invoke(
+          setParentIndeterminate,
+          parent.childList.some((o) => o.indeterminate),
+        );
       }
     }, 10),
     [],
@@ -81,7 +87,7 @@ const EasyCheckbox = (
   const onChange = useCallback(
     (e: CheckboxChangeEvent) => {
       data && (data.checked = e.target.checked);
-      setChecked && setChecked(e.target.checked);
+      invoke(setChecked, e.target.checked);
       if (data.checked) {
         setIndeterminate && setIndeterminate(false);
       }
@@ -96,9 +102,10 @@ const EasyCheckbox = (
     [userOnChange, data],
   );
 
+  // 点击展开/收缩
   const onClick = useCallback(() => {
     setExpand(!expand);
-    onExpand && onExpand(!expand);
+    invoke(onExpand, !expand);
   }, [expand, userExpand]);
 
   useEffect(() => {
@@ -108,6 +115,7 @@ const EasyCheckbox = (
 
   useEffect(() => {
     data && (data.checked = !!checked);
+    // 计算父元素的状态
     calcParentStatus(data);
   }, [checked, indeterminate, data]);
 
@@ -116,14 +124,16 @@ const EasyCheckbox = (
       parentChecked == null ||
       data.parent == null ||
       data.parent.indeterminate
-    )
+    ) {
       return;
+    }
+    // 最后一级, 父元素选中, 则选中
     setLastChecked(parentChecked);
   }, [parentChecked]);
 
   return (
     <div className={classNames(styles.checkboxContainer, className)}>
-      {!isLeaf && (
+      {showExpand && (
         <CaretRightOutlined
           className={classNames(
             {
@@ -137,7 +147,7 @@ const EasyCheckbox = (
       <Checkbox
         {...props}
         className={classNames(styles.checkbox, {
-          [styles.noLeaf]: isLeaf,
+          [styles.noLeaf]: !showExpand,
         })}
         checked={checked ?? lasetChecked}
         onChange={onChange}

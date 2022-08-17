@@ -1,17 +1,19 @@
 import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import classNames from 'classnames';
 import { MenuListProps, RowProps, ExpandColDeepProps } from './type';
+import { invoke } from './utils';
 import Checkbox from './components/Checkbox';
 import Context from './Context';
 import styles from './style.module.less';
 
+// data 不是可变数据
 const ExpandColDeep = (props: ExpandColDeepProps) => {
   const {
     data,
     list,
     firstCenterCol,
     parentChecked,
-    expand: userExpand,
+    expand: parentExpand,
     setExpand: setParentExpand,
     setChecked: setParentChecked,
     setIndeterminate: setParentIndeterminate,
@@ -42,28 +44,38 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     () => ({
       [styles.minCol]: data && !expand,
     }),
-    [expand, data],
+    [expand],
   );
 
   useEffect(() => {
-    if (data == null) return;
+    if (data == null || parentExpand == null) return;
     // 父元素关闭, 子元素递归关闭
-    if (userExpand === false) {
+    if (parentExpand === false) {
       setExpand(false);
+    } else {
+      if (data.level > 1) {
+        // 二级菜单开始, 递归子元素展开
+        setExpand(true);
+      }
     }
-  }, [userExpand, data]);
+  }, [parentExpand]);
 
   useEffect(() => {
     if (expand) {
       // 子元素展开, 父元素递归展开
-      setParentExpand && setParentExpand(true);
+      invoke(setParentExpand, true);
+    } else {
+      if (data && data.level > 1 && firstCenterCol) {
+        // 三级菜单开始, 关闭则父元素跟着关闭
+        invoke(setParentExpand, false);
+      }
     }
-  }, [expand]);
+  }, [expand, firstCenterCol]);
 
   useEffect(() => {
     // 如果当前处于半选状态, 则父元素也是半选状态
     if (indeterminate) {
-      setParentIndeterminate && setParentIndeterminate(true);
+      invoke(setParentIndeterminate, true);
     }
   }, [indeterminate]);
 
@@ -77,7 +89,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     }
     // 父元素状态改变之后, 子选项全部选中
     setChecked(parentChecked);
-  }, [parentChecked, data]);
+  }, [parentChecked]);
 
   return (
     <div
@@ -92,6 +104,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
               [styles.firstCenterCol]: firstCenterCol,
             },
           )}
+          firstCenterCol={firstCenterCol}
           data={data}
           isLeaf={list.length <= 1}
           expand={expand}
