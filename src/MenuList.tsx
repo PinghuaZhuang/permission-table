@@ -119,7 +119,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
           className={classNames(
             data.level === 0 ? styles.firstCol : styles.centerCol,
             {
-              [styles.firstCenterCol]: firstCenterCol,
+              firstCenterCol,
             },
           )}
           firstCenterCol={firstCenterCol}
