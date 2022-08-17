@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import classNames from 'classnames';
 import { MenuListProps, RowProps, ExpandColDeepProps } from './type';
-import { invoke } from './utils';
+import { invoke, each } from './utils';
 import Checkbox from './components/Checkbox';
 import Context from './Context';
 import styles from './style.module.less';
@@ -27,11 +27,29 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
   );
 
   const setChecked = useCallback((value: boolean) => {
-    data && (data.checked = value);
     if (value) {
       // 选中后, 就不是非半选状态了
       setIndeterminate(false);
     }
+    // FIXED: onChange 触发的时候, 子系兄弟节点状态延迟变化. 导致获取到的 selectKeys 错误.
+    if (data && value !== data.checked) {
+      if (value) {
+        if (data?.childList) {
+          // 全选
+          each(data.childList, (o) => {
+            o.checked = true;
+          });
+        }
+      } else {
+        if (data && !data.indeterminate) {
+          // 全不选
+          each(data.childList, (o) => {
+            o.checked = false;
+          });
+        }
+      }
+    }
+    data && (data.checked = value);
     _setChecked(value);
   }, []);
 
@@ -173,11 +191,11 @@ const MenuList = (props: MenuListProps) => {
   const { list = [], columns } = props;
 
   return (
-    <>
+    <div className="tableBody">
       {list.map((o) => {
         return <Row key={o.id} data={o} />;
       })}
-    </>
+    </div>
   );
 };
 

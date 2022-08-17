@@ -41,7 +41,7 @@ const PermissionTable = (props: PermissionTableProps) => {
       data.level = level as number;
       data.parent = parent as Data;
       // 父元素选中, 子元素全部选中
-      // 转换错误的 selectKeys
+      // FIXED: 防止 selectKeys 数据错误引起死循环
       data.checked = parent?.checked || defaultSelectedKeysMap[data.id];
     });
     return dupDataSource;
@@ -51,7 +51,7 @@ const PermissionTable = (props: PermissionTableProps) => {
     if (userOnChange == null) return;
     // @ts-ignore
     clearTimeout(onChange.timer);
-    // 触发父元素全选是有延迟的.
+    // 触发父元素状态变化有延迟的.
     // @ts-ignore
     onChange.timer = setTimeout(() => {
       const selectedKeys: PermissionTableProps['defaultSelectedKeys'] = [];

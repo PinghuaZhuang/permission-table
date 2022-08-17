@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useContext, useMemo } from 'react';
 import { Checkbox } from 'antd';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/es/checkbox';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
+// import debounce from 'lodash/debounce';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { invoke } from '../../utils';
 import Context from '../../Context';
@@ -57,32 +57,26 @@ const EasyCheckbox = (
     _setLastChecked(value);
   }, []);
 
-  // FIXED: 防止 selectKeys 数据错误引起死循环
-  const calcParentStatus = useCallback(
-    debounce((_data: Data) => {
-      // 计算父元素以及子元素 indeterminate
-      const { parent } = _data;
-      if (parent == null || parent.childList.length <= 0) return;
-      const selectKeysLength = parent.childList.filter((o) => o.checked).length;
-      if (selectKeysLength === parent.childList.length) {
-        // 全选
-        invoke(setParentChecked, true);
-        invoke(setParentIndeterminate, false);
-      } else if (selectKeysLength > 0) {
-        // 半选
-        invoke(setParentChecked, false);
-        invoke(setParentIndeterminate, true);
-      } else {
-        // 全不选
-        invoke(setParentChecked, false);
-        invoke(
-          setParentIndeterminate,
-          parent.childList.some((o) => o.indeterminate),
-        );
-      }
-    }, 10),
-    [],
-  );
+  const calcParentStatus = useCallback((_data: Data) => {
+    // 计算父元素以及子元素 indeterminate
+    const { parent } = _data;
+    if (parent == null || parent.childList.length <= 0) return;
+    const selectKeysLength = parent.childList.filter((o) => o.checked).length;
+    if (selectKeysLength === parent.childList.length) {
+      // 全选
+      invoke(setParentIndeterminate, false);
+      invoke(setParentChecked, true);
+    } else if (selectKeysLength > 0) {
+      // 半选
+      invoke(setParentIndeterminate, true);
+      invoke(setParentChecked, false);
+    } else {
+      // 全不选
+      const indeterminateTmp = parent.childList.some((o) => o.indeterminate);
+      invoke(setParentIndeterminate, indeterminateTmp);
+      invoke(setParentChecked, false);
+    }
+  }, []);
 
   const onChange = useCallback(
     (e: CheckboxChangeEvent) => {
