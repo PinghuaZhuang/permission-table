@@ -1,12 +1,17 @@
 import React from 'react';
+import TreeModel from './TreeModel';
 import { PermissionTableProps } from './type';
 
-export type ContextType = Pick<
-  PermissionTableProps,
-  'columns' | 'dataSource'
-> & {
+export type ContextType = Pick<PermissionTableProps, 'columns'> & {
+  dataSource: TreeModel[];
   maxLevel: number;
-  onChange?: () => void;
+  onChange: () => void;
+  dispatchMap: {
+    [P: string]: {
+      checked: React.Dispatch<React.SetStateAction<boolean>>;
+      indeterminate: React.Dispatch<React.SetStateAction<boolean>>;
+    };
+  };
 };
 
 // @ts-ignore

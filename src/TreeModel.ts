@@ -7,6 +7,8 @@ export interface Data {
   childList: Data[];
   className?: string;
   level: number;
+  defaultChecked?: boolean;
+  expand?: boolean;
 }
 
 type Map = {
@@ -29,6 +31,7 @@ class TreeModel implements Data {
   #prechecked: boolean = false;
   #indeterminate: boolean = false;
   #preindeterminate: boolean = false;
+  defaultChecked?: Data['defaultChecked'];
   id: Data['id'];
   pId: Data['pId'];
   level: Data['level'];
@@ -41,6 +44,7 @@ class TreeModel implements Data {
 
   constructor(options: Data, parent?: TreeModel) {
     this.options = Object.assign({}, options);
+    this.defaultChecked = options.defaultChecked;
     this.name = options.name;
     this.className = options.className;
     this.id = options.id;
@@ -86,19 +90,18 @@ class TreeModel implements Data {
   /**
    * checked 中要使用 indeterminate. 赋值的时候注意顺序.
    */
-  setChecked(value: boolean, isChildren?: boolean) {
+  setChecked(value: boolean, unrecursion?: boolean) {
     this.#prechecked = this.#checked;
     this.#checked = value;
 
     if (value) {
       // 选中后, 非半选
-      this.#preindeterminate = this.#indeterminate;
-      this.#indeterminate = false;
+      this.setIndeterminate(false, true);
     }
 
     // 自身状态变化 && 非递归子元素.
     // 避免递归子元素的时候, 重复计算父元素的状态.
-    if (this.diff() && this.parent && !isChildren) {
+    if (this.diff() && this.parent && !unrecursion) {
       // 自身状态改变后计算父元素的状态
       this.calcParentStatus();
     }
@@ -119,21 +122,27 @@ class TreeModel implements Data {
   }
 
   // 这里不需要进行 diff 监测.
-  setIndeterminate(value: boolean, isChildren?: boolean) {
+  setIndeterminate(value: boolean, unrecursion?: boolean) {
     this.#preindeterminate = this.#indeterminate;
     this.#indeterminate = value;
 
-    if (value) {
-      // 半选后, 父元素也半选
-      if (this.parent && !isChildren) {
+    if (value && !unrecursion) {
+      this.#prechecked = this.#checked;
+      this.#checked = false;
+      // 半选后, 递归父元素也半选
+      if (this.parent) {
         this.parent.setIndeterminate(true);
       }
     }
+
+    if (!unrecursion) {
+      this.diff();
+    }
   }
 
-  setCheckedReturnDiff(id: Data['id'], value?: boolean): Diff {
+  setCheckedReturnDiff(id?: Data['id'], value?: boolean): Diff {
     diff = {};
-    const target = this.map[id];
+    const target = this.map[id ?? this.id];
     if (target == null) return {};
     target.setChecked(value ?? true);
     const ret = Object.assign({}, diff);
@@ -153,17 +162,17 @@ class TreeModel implements Data {
    * 计算父元素的状态
    */
   calcParentStatus() {
-    if (this.parent == null) return;
-    const { childList } = this.parent;
     const { parent } = this;
+    if (parent == null) return;
+
+    const { childList } = parent;
     const { length } = childList;
     if (length <= 0) return;
 
-    const selectKeysLength = childList.filter((o) => o.checked).length;
     parent.#prechecked = parent.#checked;
     parent.#preindeterminate = parent.#indeterminate;
 
-    // console.log('selectKeysLength', selectKeysLength, length);
+    const selectKeysLength = childList.filter((o) => o.checked).length;
 
     if (selectKeysLength === length) {
       // 全选
@@ -171,7 +180,8 @@ class TreeModel implements Data {
       parent.#indeterminate = false;
     } else if (selectKeysLength > 0) {
       // 半选
-      parent.#indeterminate = true;
+      // 半选递归父元素
+      parent.setIndeterminate(true);
       parent.#checked = false;
     } else {
       // 全不选
@@ -181,7 +191,8 @@ class TreeModel implements Data {
 
     // 父元素状态变化, 递归上去
     const targetDiff = parent.diff();
-    if (targetDiff) {
+    // 半选不用递归计算子元素与父元素的关系.
+    if (targetDiff && !parent.indeterminate) {
       parent.calcParentStatus();
     }
   }

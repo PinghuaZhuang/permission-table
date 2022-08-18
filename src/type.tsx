@@ -1,5 +1,4 @@
-import { ColumnsType, TableProps } from 'antd/es/table';
-import { DataNode as AntdDataNode } from 'antd/es/tree';
+import TreeModel, { Data as TreeData } from './TreeModel';
 
 export interface Column {
   title?: string;
@@ -20,35 +19,24 @@ export type PermissionTableTitleProps = Required<
   Pick<PermissionTableProps, 'columns'>
 >;
 
-export interface Data {
-  childList: Data[];
-  id: number;
-  pId: number;
-  name: string;
-  level: number;
+export interface Data extends TreeData {
   parent: Data;
-  checked: boolean;
   expand?: boolean;
-  indeterminate: boolean;
-  className?: string;
 }
 export interface MenuListProps {
   columns: Column[];
-  list: Data[];
+  list: TreeModel[];
   onChange?: PermissionTableProps['onChange'];
 }
 
 export interface RowProps {
-  data: Data;
+  data: TreeModel;
 }
 
 export interface ExpandColDeepProps {
-  data: Data | null;
-  list: Data[];
+  data: TreeModel | null;
+  list: TreeModel[];
   firstCenterCol?: boolean;
-  parentChecked?: boolean;
   expand?: boolean;
   setExpand?: React.Dispatch<React.SetStateAction<boolean>>;
-  setIndeterminate?: (value: boolean) => void;
-  setChecked?: (value: boolean) => void;
 }

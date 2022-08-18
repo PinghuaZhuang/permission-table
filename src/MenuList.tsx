@@ -12,51 +12,12 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     data,
     list,
     firstCenterCol,
-    parentChecked,
     expand: parentExpand,
     setExpand: setParentExpand,
-    setChecked: setParentChecked,
-    setIndeterminate: setParentIndeterminate,
   } = props;
   const { maxLevel } = useContext(Context);
   const isAuth = data && data.level >= maxLevel - 1;
-  const [expand, setExpand] = useState<boolean>(data?.expand ?? false);
-  const [checked, _setChecked] = useState<boolean>(data?.checked ?? false);
-  const [indeterminate, _setIndeterminate] = useState<boolean>(
-    data?.indeterminate ?? false,
-  );
-
-  const setChecked = useCallback((value: boolean) => {
-    if (value) {
-      // 选中后, 就不是非半选状态了
-      setIndeterminate(false);
-    }
-    // FIXED: onChange 触发的时候, 子系兄弟节点状态延迟变化. 导致获取到的 selectKeys 错误.
-    if (data && value !== data.checked) {
-      if (value) {
-        if (data?.childList) {
-          // 全选
-          each(data.childList, (o) => {
-            o.checked = true;
-          });
-        }
-      } else {
-        if (data && !data.indeterminate) {
-          // 全不选
-          each(data.childList, (o) => {
-            o.checked = false;
-          });
-        }
-      }
-    }
-    data && (data.checked = value);
-    _setChecked(value);
-  }, []);
-
-  const setIndeterminate = useCallback((value: boolean) => {
-    data && (data.indeterminate = value);
-    _setIndeterminate(value);
-  }, []);
+  const [expand, setExpand] = useState<boolean>(data?.options.expand ?? false);
 
   const minColStyle = useMemo(
     () => ({
@@ -90,25 +51,6 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     }
   }, [expand, firstCenterCol]);
 
-  useEffect(() => {
-    // 如果当前处于半选状态, 则父元素也是半选状态
-    if (indeterminate) {
-      invoke(setParentIndeterminate, true);
-    }
-  }, [indeterminate]);
-
-  useEffect(() => {
-    if (
-      parentChecked == null ||
-      data?.parent == null ||
-      data.parent.indeterminate
-    ) {
-      return;
-    }
-    // 父元素状态改变之后, 子选项全部选中
-    setChecked(parentChecked);
-  }, [parentChecked]);
-
   return (
     <div
       key={data?.id}
@@ -127,12 +69,6 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
           isLeaf={list.length <= 1}
           expand={expand}
           onExpand={setExpand}
-          indeterminate={indeterminate}
-          checked={checked}
-          setChecked={setChecked}
-          setIndeterminate={setIndeterminate}
-          setParentChecked={setParentChecked}
-          setParentIndeterminate={setParentIndeterminate}
         >
           {data.name}
         </Checkbox>
@@ -141,14 +77,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
         <div className={classNames(styles.authCol, minColStyle)}>
           {list.map((o) => {
             return (
-              <Checkbox
-                key={o.id}
-                data={o}
-                isLeaf
-                parentChecked={checked}
-                setParentChecked={setChecked}
-                setParentIndeterminate={setIndeterminate}
-              >
+              <Checkbox key={o.id} data={o} isLeaf>
                 {o.name}
               </Checkbox>
             );
@@ -164,10 +93,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
                 list={o.childList}
                 firstCenterCol={index === 0}
                 expand={expand}
-                parentChecked={checked}
                 setExpand={setExpand}
-                setIndeterminate={setIndeterminate}
-                setChecked={setChecked}
               />
             );
           })}

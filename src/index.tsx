@@ -7,6 +7,7 @@ import { Provider } from './Context';
 import Title, { defaultColums } from './Title';
 import MenuList from './MenuList';
 import styles from './style.module.less';
+import TreeModel from './TreeModel';
 
 let uid = 0;
 
@@ -19,8 +20,6 @@ const PermissionTable = (props: PermissionTableProps) => {
     defaultSelectedKeys = [],
     onChange: userOnChange,
   } = props;
-  const cacheRef = useRef<typeof value>([]);
-  const [key, setKey] = useState<number>(uid);
 
   const columns = useMemo(() => {
     const defaultColumsDup = merge(
@@ -42,56 +41,35 @@ const PermissionTable = (props: PermissionTableProps) => {
   const dataSource = useMemo(() => {
     const dupDataSource = merge([], userDataSource);
     // @ts-ignore
-    const defaultSelectedKeysMap = (value ?? defaultSelectedKeys).reduce(
-      (map, cur) => {
-        map[cur] = true;
-        return map;
-      },
-      {},
-    );
-
-    if (value && value !== cacheRef.current) {
-      setKey(++uid);
-      console.log('update');
-    }
+    const defaultSelectedKeysMap = defaultSelectedKeys.reduce((map, cur) => {
+      map[cur] = true;
+      return map;
+    }, {});
 
     each(dupDataSource, (data, parent, level) => {
       data.childList = data.childList || [];
       data.level = level as number;
       data.parent = parent as Data;
-      // 父元素选中, 子元素全部选中
-      // FIXED: 防止 selectKeys 数据错误引起死循环
-      data.checked = parent?.checked || defaultSelectedKeysMap[data.id];
-      if (data.checked && parent && !parent.checked) {
-        parent.indeterminate = true;
-      }
+      data.defaultChecked =
+        parent?.defaultChecked || defaultSelectedKeysMap[data.id];
     });
     // console.log('dupDataSource', merge([], dupDataSource), defaultSelectedKeysMap);
-    return dupDataSource;
-  }, [userDataSource, value]);
+    return dupDataSource.map((o) => new TreeModel(o));
+  }, [userDataSource]);
+
+  const dispatchMap = useMemo(() => ({}), []);
 
   const onChange = useCallback(() => {
     if (userOnChange == null) return;
-    // @ts-ignore
-    clearTimeout(onChange.timer);
-    // 触发父元素状态变化有延迟的.
-    // @ts-ignore
-    onChange.timer = setTimeout(() => {
-      const selectedKeys: PermissionTableProps['defaultSelectedKeys'] = [];
-      each(dataSource, (data) => {
-        if (data.checked) {
-          // @ts-ignore
-          selectedKeys.push(data.id);
-        }
-      });
-      cacheRef.current = selectedKeys;
-      userOnChange(selectedKeys);
-    }, 1);
+    // 通过 diff 来改变
+    // userOnChange();
   }, [userOnChange, dataSource]);
 
   return (
-    <div key={key} className={styles.permissionContainer}>
-      <Provider value={{ columns, onChange, maxLevel, dataSource }}>
+    <div className={styles.permissionContainer}>
+      <Provider
+        value={{ columns, onChange, maxLevel, dataSource, dispatchMap }}
+      >
         <Spin spinning={loading}>
           <Title columns={columns} />
           {loading ? (
