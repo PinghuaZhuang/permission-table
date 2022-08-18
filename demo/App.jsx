@@ -3,6 +3,9 @@ import { Modal, Divider, InputNumber, Input } from 'antd';
 import PermissionTable from '../src';
 import createMock from './mock';
 import { merge } from 'lodash';
+import TreeModel from '../src/TreeModel';
+
+console.log(createMock(3, 2).map((o) => new TreeModel(o)));
 
 const defaultSelectedKeys = new Array(4);
 
