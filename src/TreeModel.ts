@@ -158,6 +158,16 @@ class TreeModel implements Data {
     return diffTmp;
   }
 
+  getSelectKeys() {
+    const selectKeys: Data['id'][] = [];
+    Object.values(this.map).forEach((o) => {
+      if (o.checked) {
+        selectKeys.push(o.id);
+      }
+    });
+    return selectKeys;
+  }
+
   /**
    * 计算父元素的状态
    */

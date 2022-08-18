@@ -5,7 +5,7 @@ import { PermissionTableProps } from './type';
 export type ContextType = Pick<PermissionTableProps, 'columns'> & {
   dataSource: TreeModel[];
   maxLevel: number;
-  onChange: () => void;
+  onChange?: (keys: TreeModel['id'][]) => void;
   dispatchMap: {
     [P: string]: {
       checked: React.Dispatch<React.SetStateAction<boolean>>;

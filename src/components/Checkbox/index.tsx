@@ -52,21 +52,17 @@ const EasyCheckbox = (
   const onChange = useCallback(
     (e: CheckboxChangeEvent) => {
       const value = e.target.checked;
-      console.log(e);
-      // TODO: 获取diff
       const diff = data.setCheckedReturnDiff(data.id, value);
-      // console.log(diff, '=======', value, dispatchMap);
       for (const id in diff) {
         const dispatch = dispatchMap[id];
         const targetDiff = diff[id];
         if (dispatch == null) return;
         for (const k in targetDiff) {
-          // console.log(k, 'kkkk');
           // @ts-ignore
           dispatch[k](targetDiff[k]);
         }
       }
-      // userOnChange();
+      invoke(userOnChange, data.getSelectKeys());
     },
     [userOnChange, data],
   );

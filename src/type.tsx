@@ -5,14 +5,12 @@ export interface Column {
 }
 
 export interface PermissionTableProps {
-  value?: string[] | number[];
+  value?: Data['id'][];
   dataSource: Data[];
   columns?: Column[];
   loading?: boolean;
-  defaultSelectedKeys?: string[] | number[];
-  onChange?: (
-    selectedKeys: Required<PermissionTableProps['defaultSelectedKeys']>,
-  ) => void;
+  defaultSelectedKeys?: Data['id'][];
+  onChange?: (selectedKeys: Data['id'][]) => void;
 }
 
 export type PermissionTableTitleProps = Required<
@@ -40,3 +38,7 @@ export interface ExpandColDeepProps {
   expand?: boolean;
   setExpand?: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export type Map<T> = {
+  [P: string]: T;
+};
