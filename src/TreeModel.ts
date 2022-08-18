@@ -7,7 +7,6 @@ export interface Data {
   childList: Data[];
   className?: string;
   level: number;
-  defaultChecked?: boolean;
   expand?: boolean;
 }
 
@@ -31,7 +30,6 @@ class TreeModel implements Data {
   #prechecked: boolean = false;
   #indeterminate: boolean = false;
   #preindeterminate: boolean = false;
-  defaultChecked?: Data['defaultChecked'];
   id: Data['id'];
   pId: Data['pId'];
   level: Data['level'];
@@ -44,7 +42,6 @@ class TreeModel implements Data {
 
   constructor(options: Data, parent?: TreeModel) {
     this.options = Object.assign({}, options);
-    this.defaultChecked = options.defaultChecked;
     this.name = options.name;
     this.className = options.className;
     this.id = options.id;
@@ -76,6 +73,10 @@ class TreeModel implements Data {
     if (this.#prechecked !== this.#checked) {
       targetDiff = targetDiff ?? {};
       targetDiff.checked = this.#checked;
+      if (this.#checked) {
+        // FIXED: indeterminate优先级高, 这里要覆盖.
+        targetDiff.indeterminate = false;
+      }
     }
     if (this.#preindeterminate !== this.#indeterminate) {
       targetDiff = targetDiff ?? {};

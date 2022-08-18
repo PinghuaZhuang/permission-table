@@ -37,7 +37,7 @@ const EasyCheckbox = (
     );
   }, [isLeaf, firstCenterCol]);
   const { onChange: userOnChange, dispatchMap } = useContext(Context);
-  const [checked, setChecked] = useState<boolean>(data.defaultChecked ?? false);
+  const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
 
   useMemo(
@@ -53,6 +53,7 @@ const EasyCheckbox = (
     (e: CheckboxChangeEvent) => {
       const value = e.target.checked;
       const diff = data.setCheckedReturnDiff(data.id, value);
+      console.log(diff, data);
       for (const id in diff) {
         const dispatch = dispatchMap[id];
         const targetDiff = diff[id];
