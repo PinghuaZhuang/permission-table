@@ -3,7 +3,7 @@ import { Modal, Divider, InputNumber, Input } from 'antd';
 import PermissionTable from '../src';
 import createMock from './mock';
 import { merge } from 'lodash';
-import TreeModel from '../src/TreeModel';
+import random from 'lodash/random';
 
 const defaultSelectedKeys = new Array(4);
 
@@ -41,7 +41,7 @@ const App = () => {
     clearTimeout(App.timer);
     App.timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, random(300, 800));
 
     return () => {
       clearTimeout(App.timer);

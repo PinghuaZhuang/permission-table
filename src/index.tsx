@@ -2,13 +2,12 @@ import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { Spin, Empty } from 'antd';
 import { PermissionTableProps, Data, Map } from './type';
 import merge from 'lodash/merge';
-import { each } from './utils';
+import { each, invoke } from './utils';
 import { Provider, ContextType } from './Context';
 import Title, { defaultColums } from './Title';
 import MenuList from './MenuList';
 import styles from './style.module.less';
 import TreeModel, { Diff } from './TreeModel';
-import { invoke } from 'lodash';
 
 const PermissionTable = (props: PermissionTableProps) => {
   const {
@@ -39,14 +38,6 @@ const PermissionTable = (props: PermissionTableProps) => {
   // 添加 level 和 parent
   const dataSource = useMemo(() => {
     const dupDataSource = merge([], userDataSource);
-    // const defaultSelectedKeysMap: Map<true> = defaultSelectedKeys.reduce(
-    //   (map, cur) => {
-    //     map[cur] = true;
-    //     return map;
-    //   },
-    //   {} as Map<true>,
-    // );
-
     each(dupDataSource, (data, parent, level) => {
       data.childList = data.childList || [];
       data.level = level as number;
@@ -101,7 +92,6 @@ const PermissionTable = (props: PermissionTableProps) => {
 
   useEffect(() => {
     if (value == null || value === cacheRef.current) return;
-    console.log('value', value);
     selectKeys(value);
   }, [dataSource, selectKeys, value]);
 

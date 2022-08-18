@@ -103,6 +103,7 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
               {Array.from({ length: maxLevel - data.level }).map((_, index) => {
                 return (
                   <div
+                    key={index}
                     className={classNames(
                       index === maxLevel - data.level - 1
                         ? styles.authCol

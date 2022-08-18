@@ -15,8 +15,7 @@ export type ContextType = Pick<PermissionTableProps, 'columns'> & {
   dispatchWithDiff: (diff: Diff) => void;
 };
 
-// @ts-ignore
-const Context = React.createContext<ContextType>({});
+const Context = React.createContext<ContextType>({} as ContextType);
 
 export interface ContextProvider {
   children?: React.ReactNode;
