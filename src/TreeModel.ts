@@ -14,7 +14,7 @@ type Map = {
   [P: string]: TreeModel;
 };
 
-type Diff = {
+export type Diff = {
   [P: string]: {
     indeterminate?: boolean;
     checked?: boolean;
@@ -152,7 +152,8 @@ class TreeModel implements Data {
   }
 
   selectKeys(keys: Data['id'][]) {
-    const diffTmp = {};
+    // 先清空状态
+    const diffTmp: Diff = this.clean();
     keys.forEach((o) => {
       merge(diffTmp, this.setCheckedReturnDiff(o));
     });
@@ -206,6 +207,27 @@ class TreeModel implements Data {
     if (targetDiff && !parent.indeterminate) {
       parent.calcParentStatus();
     }
+  }
+
+  clean() {
+    const tempDiff: Diff = {};
+    Object.values(this.map).forEach((o) => {
+      let targetDiff = tempDiff[o.id];
+      if (o.checked) {
+        targetDiff = targetDiff ?? {};
+        targetDiff.checked = false;
+      }
+      if (o.indeterminate) {
+        targetDiff = targetDiff ?? {};
+        targetDiff.indeterminate = false;
+      }
+      if (targetDiff) {
+        tempDiff[o.id] = targetDiff;
+      }
+      o.#prechecked = o.#checked = false;
+      o.#preindeterminate = o.#indeterminate = false;
+    });
+    return tempDiff;
   }
 
   each(fn: EachCallback) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import TreeModel from './TreeModel';
+import TreeModel, { Diff } from './TreeModel';
 import { PermissionTableProps } from './type';
 
 export type ContextType = Pick<PermissionTableProps, 'columns'> & {
@@ -12,6 +12,7 @@ export type ContextType = Pick<PermissionTableProps, 'columns'> & {
       indeterminate: React.Dispatch<React.SetStateAction<boolean>>;
     };
   };
+  dispatchWithDiff: (diff: Diff) => void;
 };
 
 // @ts-ignore

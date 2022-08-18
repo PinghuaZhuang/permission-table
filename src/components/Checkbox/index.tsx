@@ -36,7 +36,11 @@ const EasyCheckbox = (
         data.parent.childList.length > 1)
     );
   }, [isLeaf, firstCenterCol]);
-  const { onChange: userOnChange, dispatchMap } = useContext(Context);
+  const {
+    onChange: userOnChange,
+    dispatchMap,
+    dispatchWithDiff,
+  } = useContext(Context);
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
 
@@ -53,19 +57,10 @@ const EasyCheckbox = (
     (e: CheckboxChangeEvent) => {
       const value = e.target.checked;
       const diff = data.setCheckedReturnDiff(data.id, value);
-      console.log(diff, data);
-      for (const id in diff) {
-        const dispatch = dispatchMap[id];
-        const targetDiff = diff[id];
-        if (dispatch == null) return;
-        for (const k in targetDiff) {
-          // @ts-ignore
-          dispatch[k](targetDiff[k]);
-        }
-      }
+      dispatchWithDiff(diff);
       invoke(userOnChange, data.getSelectKeys());
     },
-    [userOnChange, data],
+    [userOnChange, data, dispatchWithDiff],
   );
 
   // 点击展开/收缩

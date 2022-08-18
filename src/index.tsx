@@ -1,13 +1,14 @@
-import { useMemo, useCallback, useRef, useState } from 'react';
+import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { Spin, Empty } from 'antd';
 import { PermissionTableProps, Data, Map } from './type';
 import merge from 'lodash/merge';
 import { each } from './utils';
-import { Provider } from './Context';
+import { Provider, ContextType } from './Context';
 import Title, { defaultColums } from './Title';
 import MenuList from './MenuList';
 import styles from './style.module.less';
-import TreeModel from './TreeModel';
+import TreeModel, { Diff } from './TreeModel';
+import { invoke } from 'lodash';
 
 const PermissionTable = (props: PermissionTableProps) => {
   const {
@@ -16,9 +17,9 @@ const PermissionTable = (props: PermissionTableProps) => {
     columns: userColumns,
     loading = false,
     defaultSelectedKeys = [],
-    onChange,
+    onChange: userOnChange,
   } = props;
-
+  const cacheRef = useRef<TreeModel['id'][]>([]);
   const columns = useMemo(() => {
     const defaultColumsDup = merge(
       // @ts-ignore
@@ -54,12 +55,67 @@ const PermissionTable = (props: PermissionTableProps) => {
     return dupDataSource.map((o) => new TreeModel(o));
   }, [userDataSource]);
 
-  const dispatchMap = useMemo(() => ({}), [dataSource]);
+  const dispatchMap = useMemo<ContextType['dispatchMap']>(
+    () => ({}),
+    [dataSource],
+  );
+
+  const dispatchWithDiff = useCallback(
+    (diff: Diff) => {
+      for (const id in diff) {
+        const dispatch = dispatchMap[id];
+        const targetDiff = diff[id];
+        if (dispatch == null) return;
+        for (const k in targetDiff) {
+          // @ts-ignore
+          dispatch[k](targetDiff[k]);
+        }
+      }
+    },
+    [dispatchMap],
+  );
+
+  const selectKeys = useCallback(
+    (keys: TreeModel['id'][]) => {
+      if (!Array.isArray(keys)) return;
+      dataSource.forEach((o) => {
+        const diff = o.selectKeys(keys);
+        dispatchWithDiff(diff);
+      });
+    },
+    [dispatchWithDiff],
+  );
+
+  const onChange = useCallback(
+    (keys: TreeModel['id'][]) => {
+      cacheRef.current = keys;
+      invoke(userOnChange, keys);
+    },
+    [userOnChange],
+  );
+
+  useEffect(() => {
+    if (value) return;
+    selectKeys(defaultSelectedKeys);
+  }, [dataSource, selectKeys]);
+
+  useEffect(() => {
+    if (value == null || value === cacheRef.current) return;
+    console.log('value', value);
+    selectKeys(value);
+  }, [dataSource, selectKeys, value]);
 
   return (
     <div className={styles.permissionContainer}>
       <Provider
-        value={{ columns, onChange, maxLevel, dataSource, dispatchMap }}
+        value={{
+          columns,
+          onChange,
+          maxLevel,
+          dataSource,
+          dispatchMap,
+          dispatchWithDiff,
+        }}
       >
         <Spin spinning={loading}>
           <Title columns={columns} />
