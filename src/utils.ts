@@ -25,3 +25,30 @@ export function each<T>(
 export function invoke(fn?: (...reset: any[]) => void, ...rest: any[]) {
   return fn && fn(...rest);
 }
+
+let canvas: HTMLCanvasElement;
+
+export function px2width(str: string, font = `normal 14px Robot`): number {
+  canvas = canvas || document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (context == null) return 0;
+
+  if (font) {
+    context.font = font;
+  }
+  const metrics = context.measureText(str);
+  return metrics.width;
+}
+
+export function byteLengthEn(str: string) {
+  if (typeof str !== 'string') return 0;
+  let b = 0;
+  for (let i = str.length - 1; i >= 0; i--) {
+    if (str.charCodeAt(i) > 255) {
+      b += 2;
+    } else {
+      b++;
+    }
+  }
+  return b;
+}

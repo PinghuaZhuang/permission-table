@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import { useState, useEffect, useMemo, useContext } from 'react';
 import classNames from 'classnames';
 import { MenuListProps, RowProps, ExpandColDeepProps } from './type';
-import { invoke, each } from './utils';
+import { invoke } from './utils';
 import Checkbox from './components/Checkbox';
 import Context from './Context';
 import styles from './style.module.less';
@@ -15,41 +15,56 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     expand: parentExpand,
     setExpand: setParentExpand,
   } = props;
-  const { maxLevel } = useContext(Context);
-  const isAuth = data && data.level >= maxLevel - 1;
+  const { maxLevel, dispatchMap } = useContext(Context);
+  const isAuth = useMemo(() => data && data.level >= maxLevel - 1, [maxLevel]);
   const [expand, setExpand] = useState<boolean>(data?.options.expand ?? false);
 
   const minColStyle = useMemo(
     () => ({
       [styles.minCol]: data && !expand,
     }),
-    [expand],
+    [expand, data],
   );
+
+  useMemo(() => {
+    if (data == null) return;
+    if (dispatchMap[data.id]) {
+      dispatchMap[data.id].expand = setExpand;
+    } else {
+      dispatchMap[data.id] = {
+        expand: setExpand,
+      };
+    }
+  }, [dispatchMap, data]);
 
   useEffect(() => {
     if (data == null || parentExpand == null) return;
     // 父元素关闭, 子元素递归关闭
     if (parentExpand === false) {
       setExpand(false);
-    } else {
-      if (data.level > 1 && data.level < 3) {
-        // 二级菜单开始, 递归子元素展开
-        setExpand(true);
-      }
     }
-  }, [parentExpand]);
+  }, [parentExpand, data]);
 
   useEffect(() => {
     if (expand) {
       // 子元素展开, 父元素递归展开
       invoke(setParentExpand, true);
+      // 兄弟节点关闭
+      // if (data?.parent) {
+      //   data.parent.each((o) => {
+      //     if (o.id !== data.id && dispatchMap[o.id]?.expand) {
+      //       // @ts-ignore
+      //       dispatchMap[o.id].expand(false);
+      //     }
+      //   });
+      // }
     } else {
       if (data && data.level > 1 && firstCenterCol) {
         // 三级菜单开始, 关闭则父元素跟着关闭
         invoke(setParentExpand, false);
       }
     }
-  }, [expand, firstCenterCol]);
+  }, [expand, firstCenterCol, dispatchMap, data]);
 
   return (
     <div

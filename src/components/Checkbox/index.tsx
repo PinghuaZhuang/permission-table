@@ -1,9 +1,9 @@
-import { useState, useCallback, useContext, useMemo } from 'react';
+import { useState, useCallback, useContext, useMemo, useEffect } from 'react';
 import { Checkbox } from 'antd';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/es/checkbox';
 import classNames from 'classnames';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { invoke } from '../../utils';
+import { invoke, px2width } from '../../utils';
 import Context from '../../Context';
 import TreeModel from '../../TreeModel';
 import styles from './index.module.less';
@@ -28,31 +28,36 @@ const EasyCheckbox = (
     expand: userExpand,
     onExpand,
   } = props;
+  const [authOverLong, setAuthOverLong] = useState<boolean>(true);
   const showExpand = useMemo(() => {
     return (
-      !isLeaf ||
+      (!isLeaf && authOverLong) ||
       (firstCenterCol &&
         data?.parent?.childList &&
         data.parent.childList.length > 1)
     );
-  }, [isLeaf, firstCenterCol]);
+  }, [isLeaf, firstCenterCol, authOverLong]);
   const {
     onChange: userOnChange,
     dispatchMap,
     dispatchWithDiff,
-    dataSource,
+    authWidth,
+    maxLevel,
   } = useContext(Context);
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
 
-  useMemo(
-    () =>
-      (dispatchMap[data.id] = {
+  useMemo(() => {
+    if (dispatchMap[data.id] == null) {
+      dispatchMap[data.id] = {
         checked: setChecked,
         indeterminate: setIndeterminate,
-      }),
-    [dispatchMap],
-  );
+      };
+    } else {
+      dispatchMap[data.id].checked = setChecked;
+      dispatchMap[data.id].indeterminate = setIndeterminate;
+    }
+  }, [dispatchMap, data]);
 
   const onChange = useCallback(
     (e: CheckboxChangeEvent) => {
@@ -61,13 +66,24 @@ const EasyCheckbox = (
       dispatchWithDiff(diff);
       userOnChange();
     },
-    [userOnChange, data, dispatchWithDiff, dataSource],
+    [userOnChange, dispatchWithDiff, data],
   );
 
   // 点击展开/收缩
   const onClick = useCallback(() => {
     invoke(onExpand, !userExpand);
   }, [userExpand]);
+
+  useEffect(() => {
+    if (authWidth <= 0 || data.level !== maxLevel - 1) return;
+    let length = 0;
+    data.each(({ name }) => {
+      length += px2width(name) + 16 + 37 + 16;
+    });
+    if (authWidth > length) {
+      setAuthOverLong(false);
+    }
+  }, [authWidth, data]);
 
   return (
     <div

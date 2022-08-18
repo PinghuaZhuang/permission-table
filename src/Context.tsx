@@ -8,11 +8,13 @@ export type ContextType = Pick<PermissionTableProps, 'columns'> & {
   onChange: () => void;
   dispatchMap: {
     [P: string]: {
-      checked: React.Dispatch<React.SetStateAction<boolean>>;
-      indeterminate: React.Dispatch<React.SetStateAction<boolean>>;
+      checked?: React.Dispatch<React.SetStateAction<boolean>>;
+      indeterminate?: React.Dispatch<React.SetStateAction<boolean>>;
+      expand?: React.Dispatch<React.SetStateAction<boolean>>;
     };
   };
   dispatchWithDiff: (diff: Diff) => void;
+  authWidth: number;
 };
 
 const Context = React.createContext<ContextType>({} as ContextType);

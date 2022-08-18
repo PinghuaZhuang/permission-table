@@ -1,6 +1,6 @@
-import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
+import { useMemo, useCallback, useRef, useEffect, useState } from 'react';
 import { Spin, Empty } from 'antd';
-import { PermissionTableProps, Data, Map } from './type';
+import { PermissionTableProps, Data } from './type';
 import merge from 'lodash/merge';
 import { each, invoke } from './utils';
 import { Provider, ContextType } from './Context';
@@ -19,6 +19,8 @@ const PermissionTable = (props: PermissionTableProps) => {
     onChange: userOnChange,
   } = props;
   const cacheRef = useRef<TreeModel['id'][]>([]);
+  const coantainerRef = useRef<HTMLDivElement>(null);
+  const [authWidth, setAuthWidth] = useState<number>(0);
   const columns = useMemo(() => {
     const defaultColumsDup = merge(
       // @ts-ignore
@@ -74,7 +76,7 @@ const PermissionTable = (props: PermissionTableProps) => {
         dispatchWithDiff(diff);
       });
     },
-    [dispatchWithDiff],
+    [dataSource, dispatchWithDiff],
   );
 
   const onChange = useCallback(() => {
@@ -96,8 +98,17 @@ const PermissionTable = (props: PermissionTableProps) => {
     selectKeys(value);
   }, [dataSource, selectKeys, value]);
 
+  useEffect(() => {
+    const authColTitle = coantainerRef.current?.querySelector(
+      `.${styles.tableItem}:last-child`,
+    );
+    if (authColTitle) {
+      setAuthWidth(authColTitle?.getBoundingClientRect().width);
+    }
+  }, [dataSource]);
+
   return (
-    <div className={styles.permissionContainer}>
+    <div ref={coantainerRef} className={styles.permissionContainer}>
       <Provider
         value={{
           columns,
@@ -106,6 +117,7 @@ const PermissionTable = (props: PermissionTableProps) => {
           dataSource,
           dispatchMap,
           dispatchWithDiff,
+          authWidth,
         }}
       >
         <Spin spinning={loading}>
