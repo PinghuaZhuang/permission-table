@@ -42,25 +42,26 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     // 父元素关闭, 子元素递归关闭
     if (parentExpand === false) {
       setExpand(false);
-    }
-  }, [parentExpand, data]);
+    } /* else if (firstCenterCol && data.level === 1) {
+      setExpand(true);
+    } */
+  }, [parentExpand, firstCenterCol, data]);
 
   useEffect(() => {
     if (expand) {
       // 子元素展开, 父元素递归展开
       invoke(setParentExpand, true);
-      // 兄弟节点关闭
-      // if (data?.parent) {
-      //   data.parent.each((o) => {
-      //     if (o.id !== data.id && dispatchMap[o.id]?.expand) {
-      //       // @ts-ignore
-      //       dispatchMap[o.id].expand(false);
-      //     }
-      //   });
-      // }
     } else {
-      if (data && data.level > 1 && firstCenterCol) {
+      if (data && data.level === 1 && firstCenterCol) {
         // 三级菜单开始, 关闭则父元素跟着关闭
+        invoke(setParentExpand, false);
+      }
+      if (
+        data &&
+        firstCenterCol &&
+        // @ts-ignore
+        (data.authOverLong === false || data.childList.length <= 1)
+      ) {
         invoke(setParentExpand, false);
       }
     }

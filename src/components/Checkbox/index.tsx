@@ -33,6 +33,7 @@ const EasyCheckbox = (
     return (
       (!isLeaf && authOverLong) ||
       (firstCenterCol &&
+        // data.level === 1 &&
         data?.parent?.childList &&
         data.parent.childList.length > 1)
     );
@@ -81,6 +82,8 @@ const EasyCheckbox = (
       length += px2width(name) + 16 + 37 + 16;
     });
     if (authWidth > length) {
+      // @ts-ignore
+      data.authOverLong = false;
       setAuthOverLong(false);
     }
   }, [authWidth, data]);
