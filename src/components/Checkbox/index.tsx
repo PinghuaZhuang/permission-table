@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext, useMemo } from 'react';
+import { useState, useCallback, useContext, useMemo } from 'react';
 import { Checkbox } from 'antd';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/es/checkbox';
 import classNames from 'classnames';
@@ -40,6 +40,7 @@ const EasyCheckbox = (
     onChange: userOnChange,
     dispatchMap,
     dispatchWithDiff,
+    dataSource,
   } = useContext(Context);
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
@@ -58,9 +59,9 @@ const EasyCheckbox = (
       const value = e.target.checked;
       const diff = data.setCheckedReturnDiff(data.id, value);
       dispatchWithDiff(diff);
-      invoke(userOnChange, data.getSelectKeys());
+      userOnChange();
     },
-    [userOnChange, data, dispatchWithDiff],
+    [userOnChange, data, dispatchWithDiff, dataSource],
   );
 
   // 点击展开/收缩

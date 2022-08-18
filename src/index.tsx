@@ -77,13 +77,14 @@ const PermissionTable = (props: PermissionTableProps) => {
     [dispatchWithDiff],
   );
 
-  const onChange = useCallback(
-    (keys: TreeModel['id'][]) => {
-      cacheRef.current = keys;
-      invoke(userOnChange, keys);
-    },
-    [userOnChange],
-  );
+  const onChange = useCallback(() => {
+    const keys: TreeModel['id'][] = [];
+    dataSource.forEach((o) => {
+      keys.push(...o.getSelectKeys());
+    });
+    cacheRef.current = keys;
+    invoke(userOnChange, keys);
+  }, [userOnChange, dataSource]);
 
   useEffect(() => {
     if (value) return;
