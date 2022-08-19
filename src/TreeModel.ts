@@ -74,7 +74,7 @@ class TreeModel implements Data {
       targetDiff = targetDiff ?? {};
       targetDiff.checked = this.#checked;
       if (this.#checked) {
-        // FIXED: indeterminate优先级高, 这里要覆盖.
+        // FIXED: indeterminate优先级高, 这里要添加 diff. 告诉外部状态变化
         targetDiff.indeterminate = false;
       }
     }
@@ -141,6 +141,9 @@ class TreeModel implements Data {
     }
   }
 
+  /**
+   * 通过ID设置选中
+   */
   setCheckedReturnDiff(id?: Data['id'], value?: boolean): Diff {
     diff = {};
     const target = this.map[id ?? this.id];
@@ -151,6 +154,9 @@ class TreeModel implements Data {
     return ret;
   }
 
+  /**
+   * 根据ID数组设置选中, 返回Diff
+   */
   selectKeys(keys: Data['id'][]) {
     // 先清空状态
     const diffTmp: Diff = this.clean();
@@ -160,6 +166,9 @@ class TreeModel implements Data {
     return diffTmp;
   }
 
+  /**
+   * 获取当前树选中的状态
+   */
   getSelectKeys() {
     const selectKeys: Data['id'][] = [];
     Object.values(this.map).forEach((o) => {
@@ -209,6 +218,9 @@ class TreeModel implements Data {
     }
   }
 
+  /**
+   * 清空当前树的状态并返回 diff
+   */
   clean() {
     const tempDiff: Diff = {};
     Object.values(this.map).forEach((o) => {
@@ -230,12 +242,14 @@ class TreeModel implements Data {
     return tempDiff;
   }
 
+  // 遍历下一级元素
   each(fn: EachCallback) {
     this.childList.forEach((data, index) => {
       fn(data, this, index);
     });
   }
 
+  // 递归遍历下级元素, 回调再递归前
   eachDeep(fn: EachCallback) {
     this.childList.forEach((data, index) => {
       fn(data, this, index);
@@ -243,6 +257,7 @@ class TreeModel implements Data {
     });
   }
 
+  // 递归遍历下级元素, 回调再递归后
   eachDeepAfter(fn: EachCallback) {
     this.childList.forEach((data, index) => {
       data.eachDeep(fn);

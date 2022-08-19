@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
-  "main": "lib/index.umd",
+  "main": "lib/permission-table.js",
   "module": "src",
-  "browser": "lib/index.umd.cjs",
+  "browser": "lib/permission-table.umd.cjs",
   "scripts": {
     "build": "vite build",
     "build:example": "cross-env VITE_ENV=dev vite build --emptyOutDir",
@@ -25,10 +25,12 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@rollup/plugin-typescript": "^8.3.4",
     "classnames": "^2.3.1",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tslib": "^2.4.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",

@@ -3,9 +3,9 @@ import { AntdResolve, createStyleImportPlugin } from 'vite-plugin-style-import';
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
+import typescript from '@rollup/plugin-typescript';
 
 const isDev = process.env.VITE_ENV === 'dev';
-// const isProduction = process.env.NODE_ENV === 'production';
 
 function resolve(url: string) {
   return path.resolve(__dirname, url);
@@ -25,14 +25,30 @@ export default defineConfig({
       ? undefined
       : {
           entry: resolve('./src'),
-          name: 'createIndexBar',
+          name: 'PermissionTable',
+          formats: ['es', 'umd'],
         },
     rollupOptions: isDev
       ? {}
       : {
+          external: ['react', 'react-dom', 'antd'],
           output: {
-            exports: 'named',
+            globals: {
+              react: 'react',
+              antd: 'antd',
+              'react-dom': 'react-dom',
+            },
           },
+          plugins: [
+            typescript({
+              target: 'es2015',
+              rootDir: resolve('./src'),
+              declaration: true,
+              declarationDir: resolve('./lib'),
+              exclude: resolve('node_modules/**'),
+              tsconfig: resolve('./tsconfig.json'),
+            }),
+          ],
         },
   },
   resolve: {
