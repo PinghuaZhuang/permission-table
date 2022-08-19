@@ -70,7 +70,7 @@ const App = () => {
       />
       <br />
       <strong>Change Value(example: 10,4,5):</strong>{' '}
-      <Input.TextArea onChange={onValueChange} />
+      <Input.TextArea placeholder="example: 10,4,5" onChange={onValueChange} />
       <br />
       <strong>Select Keys:</strong> {selectKeys.join(', ')}
       <br />

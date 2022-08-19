@@ -42,9 +42,13 @@ const ExpandColDeep = (props: ExpandColDeepProps) => {
     // 父元素关闭, 子元素递归关闭
     if (parentExpand === false) {
       setExpand(false);
+      return;
     } /* else if (firstCenterCol && data.level === 1) {
       setExpand(true);
     } */
+    if (firstCenterCol && data.childList.length === 1) {
+      setExpand(parentExpand);
+    }
   }, [parentExpand, firstCenterCol, data]);
 
   useEffect(() => {

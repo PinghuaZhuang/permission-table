@@ -108,28 +108,28 @@ const PermissionTable = (props: PermissionTableProps) => {
   }, [dataSource]);
 
   return (
-    <div ref={coantainerRef} className={styles.permissionContainer}>
-      <Provider
-        value={{
-          columns,
-          onChange,
-          maxLevel,
-          dataSource,
-          dispatchMap,
-          dispatchWithDiff,
-          authWidth,
-        }}
-      >
-        <Spin spinning={loading}>
+    <Spin spinning={loading}>
+      <div ref={coantainerRef} className={styles.permissionContainer}>
+        <Provider
+          value={{
+            columns,
+            onChange,
+            maxLevel,
+            dataSource,
+            dispatchMap,
+            dispatchWithDiff,
+            authWidth,
+          }}
+        >
           <Title columns={columns} />
           {loading ? (
             <Empty description />
           ) : (
             <MenuList columns={columns} list={dataSource} />
           )}
-        </Spin>
-      </Provider>
-    </div>
+        </Provider>
+      </div>
+    </Spin>
   );
 };
 
