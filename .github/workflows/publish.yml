@@ -1,9 +1,9 @@
-name: Publish permission-table lib.
+name: publish
 
 on:
   push:
     tags:
-      - indexBar_tag_v*
+      - permissionTable_tag_v*
   workflow_dispatch:
 
 jobs:

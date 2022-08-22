@@ -63,7 +63,7 @@ const EasyCheckbox = (
   const onChange = useCallback(
     (e: CheckboxChangeEvent) => {
       const value = e.target.checked;
-      const diff = data.setCheckedReturnDiff(data.id, value);
+      const diff = data.setCheckedByIdReturnDiff(data.id, value);
       dispatchWithDiff(diff);
       userOnChange();
     },

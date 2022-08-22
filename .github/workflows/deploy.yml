@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages permission-table html.
+name: deploy
 
 on:
   push:

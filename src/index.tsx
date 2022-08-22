@@ -7,7 +7,7 @@ import { Provider, ContextType } from './Context';
 import Title, { defaultColums } from './Title';
 import MenuList from './MenuList';
 import styles from './style.module.less';
-import TreeModel, { Diff } from './TreeModel';
+import CheckedTreeModel, { Diff } from '@zstark/checked-tree-model';
 
 const PermissionTable = (props: PermissionTableProps) => {
   const {
@@ -18,7 +18,7 @@ const PermissionTable = (props: PermissionTableProps) => {
     defaultSelectedKeys = [],
     onChange: userOnChange,
   } = props;
-  const cacheRef = useRef<TreeModel['id'][]>([]);
+  const cacheRef = useRef<CheckedTreeModel['id'][]>([]);
   const coantainerRef = useRef<HTMLDivElement>(null);
   const [authWidth, setAuthWidth] = useState<number>(0);
   const columns = useMemo(() => {
@@ -45,7 +45,7 @@ const PermissionTable = (props: PermissionTableProps) => {
       data.level = level as number;
       data.parent = parent as Data;
     });
-    return dupDataSource.map((o) => new TreeModel(o));
+    return dupDataSource.map((o) => new CheckedTreeModel(o));
   }, [userDataSource]);
 
   const dispatchMap = useMemo<ContextType['dispatchMap']>(
@@ -69,7 +69,7 @@ const PermissionTable = (props: PermissionTableProps) => {
   );
 
   const selectKeys = useCallback(
-    (keys: TreeModel['id'][]) => {
+    (keys: CheckedTreeModel['id'][]) => {
       if (!Array.isArray(keys)) return;
       dataSource.forEach((o) => {
         const diff = o.selectKeys(keys);
@@ -80,7 +80,7 @@ const PermissionTable = (props: PermissionTableProps) => {
   );
 
   const onChange = useCallback(() => {
-    const keys: TreeModel['id'][] = [];
+    const keys: CheckedTreeModel['id'][] = [];
     dataSource.forEach((o) => {
       keys.push(...o.getSelectKeys());
     });

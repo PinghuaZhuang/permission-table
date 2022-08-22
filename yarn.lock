@@ -478,6 +478,11 @@
     magic-string "^0.26.2"
     react-refresh "^0.14.0"
 
+"@zstark/checked-tree-model@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@zstark/checked-tree-model/-/checked-tree-model-1.0.2.tgz#e859008f5d59b2b7cc9337c76b90072d4caf58ac"
+  integrity sha512-ncK82yuJxjuAeG/b/bBnCZHiwZWqANpbkhP5bm7WSkP5tSZQQXdiI0Xda2hTBUEmFYeCdDgQZGY/1AkTh5b9bw==
+
 acorn@^8.5.0:
   version "8.8.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.0.tgz#88c0187620435c7f6015803f5539dae05a9dbea8"

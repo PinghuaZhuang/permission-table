@@ -48,7 +48,7 @@ declare class TreeModel implements Data {
   /**
    * 通过ID设置选中
    */
-  setCheckedReturnDiff(id?: Data['id'], value?: boolean): Diff;
+  setCheckedByIdReturnDiff(id?: Data['id'], value?: boolean): Diff;
   /**
    * 根据ID数组设置选中, 返回Diff
    */
