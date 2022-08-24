@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     tags:
-      - permissionTable_tag_v*
+      - PermissionTable_tag_v*
   workflow_dispatch:
 
 jobs:

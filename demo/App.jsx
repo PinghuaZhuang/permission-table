@@ -88,7 +88,6 @@ const App = () => {
           value={selectKeys}
           dataSource={dataSource}
           onChange={onChange}
-          defaultSelectedKeys={[4]}
           columns={merge([], new Array(columnsLength), [
             {
               title: '我修改了一级菜单',

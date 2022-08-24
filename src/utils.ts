@@ -12,7 +12,7 @@ export function each<T>(
   parent?: T,
   parentLevel?: number,
 ) {
-  let level = parent == null ? 0 : (parentLevel as number) + 1;
+  const level = parent == null ? 0 : (parentLevel as number) + 1;
   arr.forEach((data) => {
     const list = (data as any)[childrenField];
     fn(data, parent, level);
@@ -38,17 +38,4 @@ export function px2width(str: string, font = `normal 14px Robot`): number {
   }
   const metrics = context.measureText(str);
   return metrics.width;
-}
-
-export function byteLengthEn(str: string) {
-  if (typeof str !== 'string') return 0;
-  let b = 0;
-  for (let i = str.length - 1; i >= 0; i--) {
-    if (str.charCodeAt(i) > 255) {
-      b += 2;
-    } else {
-      b++;
-    }
-  }
-  return b;
 }
