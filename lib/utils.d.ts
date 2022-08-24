@@ -17,4 +17,3 @@ export declare function invoke(
   ...rest: any[]
 ): void | undefined;
 export declare function px2width(str: string, font?: string): number;
-export declare function byteLengthEn(str: string): number;
