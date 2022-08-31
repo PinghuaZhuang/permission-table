@@ -94,18 +94,19 @@ const PermissionTable = (props: PermissionTableProps) => {
   }, [dataSource, selectKeys]);
 
   useEffect(() => {
-    if (value == null || value === cacheRef.current) return;
+    if (loading || value == null || value === cacheRef.current) return;
     selectKeys(value);
-  }, [dataSource, selectKeys, value]);
+  }, [dataSource, selectKeys, value, loading]);
 
   useEffect(() => {
+    if (loading) return;
     const authColTitle = coantainerRef.current?.querySelector(
       `.${styles.tableItem}:last-child`,
     );
     if (authColTitle) {
       setAuthWidth(authColTitle?.getBoundingClientRect().width);
     }
-  }, [dataSource]);
+  }, [dataSource, loading]);
 
   return (
     <Spin spinning={loading}>
