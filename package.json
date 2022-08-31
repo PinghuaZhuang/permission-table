@@ -1,6 +1,6 @@
 {
   "name": "@zstark/permission-table",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "main": "lib/permission-table.js",
