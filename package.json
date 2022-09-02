@@ -3,9 +3,9 @@
   "version": "1.0.2",
   "license": "MIT",
   "type": "module",
-  "main": "lib/permission-table.js",
+  "main": "lib/index.es.js",
   "module": "src",
-  "browser": "lib/permission-table.umd.cjs",
+  "browser": "lib/index.umd.cjs",
   "scripts": {
     "build": "vite build",
     "build:example": "cross-env VITE_ENV=dev vite build --emptyOutDir",

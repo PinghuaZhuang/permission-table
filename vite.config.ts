@@ -27,6 +27,7 @@ export default defineConfig({
           entry: resolve('./src'),
           name: 'PermissionTable',
           formats: ['es', 'umd'],
+          fileName: (format) => `index.${format}.js`,
         },
     rollupOptions: isDev
       ? {}
