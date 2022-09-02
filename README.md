@@ -8,6 +8,8 @@
 
 [Live Demo](https://pinghuazhuang.github.io/@zstark/permission-table/)
 
+![](https://git.poker/PinghuaZhuang/note/blob/master/images-upload/PermissionTable.7l9nix5u95k0.gif?raw=true)
+
 ## 🚀 Quick Start
 
 ```jsx
