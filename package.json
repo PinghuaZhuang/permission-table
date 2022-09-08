@@ -1,6 +1,6 @@
 {
   "name": "@zstark/permission-table",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.es.js",
@@ -24,7 +24,7 @@
     ]
   },
   "dependencies": {
-    "@zstark/checked-tree-model": "^1.0.4",
+    "@zstark/checked-tree-model": "^1.1.0",
     "classnames": "^2.3.1",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
